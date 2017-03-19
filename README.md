@@ -26,7 +26,7 @@ or download hostsctl.sh and run it.
 
 #### after the installation to update the hosts file.
 
-*. Before you can start using `hostsctl` you need to select hosts file.
+* Before you can start using `hostsctl` you need to select hosts file.
 
 ## List of of hosts files
 
@@ -48,7 +48,7 @@ and run `hostsctl update` to download the hosts file.
 
 ```{bash}
   sudo hostsctl enable  bigsite.tld # Now you have access to this site
-  sudo hostsctl disable bigsite.tld # Now the site pointed to 127.0.0.1
+  sudo hostsctl disable bigsite.tld # Now the site pointed to 0.0.0.0
 ```
 
 See also `--help`
