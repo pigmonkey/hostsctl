@@ -15,11 +15,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+_VERSION="0.2"
 
 # place here URL for hosts file.
 # default blocking fakenews,gambling,porn and social networks.
 URL="https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts"
 HOSTS="/etc/hosts"
+TMP_HOSTS="/tmp/hosts"
+IP="0.0.0.0" # Default IP for new entries
 
 # by https://github.com/mathiasbynens/dotfiles
 if tput setaf 1 &> /dev/null; then
@@ -86,15 +89,22 @@ hosts_action() {
   if [ $1 -eq 1 ];then
     awk -vhost=$2 \
     '{ if ( $0 ~ host && substr($0, 1, 1) != "#" ) printf("#%s\n", $0); else print $0 }' ${HOSTS} \
-    > /tmp/hosts
+    > ${TMP_HOSTS}
     msg_check "$2: ${green}enabled${reset}"
   elif [ $1 -eq 0 ];then
     awk -vhost=$2 \
     '{ if ( $0 ~ host && substr($0, 1, 1) == "#" ) print substr($0, 2); else print $0 }' ${HOSTS} \
-    > /tmp/hosts
+    > ${TMP_HOSTS}
     msg_check "$2: ${yellow}disabled${reset}"
   fi
-  mv /tmp/hosts ${HOSTS}
+
+  # If the host not exists in /etc/hosts
+  # create new entry.
+  if [ -s ${TMP_HOSTS} ] && [ $1 -eq 0 ] && [[ ! $(grep "$2" ${HOSTS}) ]];then
+    echo "${IP}   $2" >> ${HOSTS}
+  else
+    mv ${TMP_HOSTS} ${HOSTS}
+  fi
 }
 
 # hosts_update: update the /etc/hosts list
