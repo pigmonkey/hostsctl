@@ -11,12 +11,20 @@ To install it right away, type:
 
 ```{bash}
   sudo curl -L https://git.io/vy5xx -o /usr/local/bin/hostsctl
-  chmod +x /usr/local/bin/hostsctl
+  sudo chmod +x /usr/local/bin/hostsctl
 ```
 
 or download hostsctl.sh and run it.
 
 # Usage
+
+#### run:
+
+```{bash}
+  sudo hostsctl update
+```
+
+#### after the installation to update the hosts file.
 
 *. Before you can start using `hostsctl` you need to select hosts file.
 
