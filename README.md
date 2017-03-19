@@ -1,4 +1,4 @@
-# hostsctl
+# :no_entry_sign: hostsctl
 
 Hostsctl.sh allows you to control your /etc/hosts easily. you can block ads, porn, soical networks with one command.
 
