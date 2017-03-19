@@ -25,13 +25,13 @@ hosts_usage() {
 cat << END
 Usage $0 [option] [host] ...
   
-Hostsctl.sh allows you to block ads, social networks, porn etc..
-by controlling /etc/hosts file.
+Hostsctl.sh allows you to block ads, social networks, porn, etc,
+by manipulating the /etc/hosts file.
 
 Arguments:
-  enable     enable [host].
-  disable    disable [host]
-  update     update the /etc/hosts file.
+  enable [host]    enable specified host
+  disable [host]   disable specified host
+  update           update the /etc/hosts file
 
 END
 }
@@ -50,7 +50,7 @@ msg_error() {
 
 # hosts_action: enable/disable [host]
 # @param action: 1 = enable, 0 = disable.
-# @param host  : hostt name (domain.ltd)
+# @param host  : host name (domain.ltd)
 hosts_action() {
   if [ $1 -eq 1 ];then
     awk -vhost=$2 \
