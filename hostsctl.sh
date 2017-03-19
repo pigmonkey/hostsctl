@@ -17,7 +17,8 @@
 
 
 # place here URL for hosts file.
-URL=""
+# default blocking fakenews,gambling,porn and social networks.
+URL="https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts"
 HOSTS="/etc/hosts"
 
 hosts_usage() {
