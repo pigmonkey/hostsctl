@@ -65,6 +65,8 @@ by manipulating the /etc/hosts file.
 Arguments:
   enable [host]    enable specified host
   disable [host]   disable specified host
+  list-active      list active hosts
+  list-inactive    list inactive hosts
   update           update the /etc/hosts file
 
 END
@@ -82,10 +84,18 @@ msg_error() {
   printf "${red}# error:${reset} $@\n"
 }
 
+root_check() {
+  if [ $UID -ne 0 ];then
+    msg_error "please run as root."
+    exit
+  fi
+}
 # hosts_action: enable/disable [host]
 # @param action: 1 = enable, 0 = disable.
 # @param host  : host name (domain.ltd)
 hosts_action() {
+  root_check
+
   if [ $1 -eq 1 ];then
     awk -vhost=$2 \
     '{ if ( $0 ~ host && substr($0, 1, 1) != "#" ) printf("#%s\n", $0); else print $0 }' ${HOSTS} \
@@ -107,17 +117,36 @@ hosts_action() {
   fi
 }
 
+# hosts_list_active: list active hosts
+hosts_list_active() {
+  hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${HOSTS})
+  total=0
+
+  for host in $hosts;do
+    printf "${green}\u25CF${reset} ${white}${host}${reset}\n"
+    total=$[$total+1]
+  done
+  msg_check "${white}total: ${yellow}${total}"
+}
+
+# hosts_list_inactive: list inactive hosts
+hosts_list_inactive() {
+  hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${HOSTS})
+  total=0;
+
+  for host in $hosts;do
+    printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
+    total=$[$total+1]
+  done
+  msg_check "${white}total: ${yellow}${total}"
+}
+
 # hosts_update: update the /etc/hosts list
 hosts_update() {
+  root_check
   curl -o "${HOSTS}" -L "${URL}" -s
   msg_check "/etc/hosts - ${blue}updated.${reset}"
 }
-
-if [ $UID -ne 0 ];then
-  hosts_usage
-  msg_error "please run as root."
-  exit
-fi
 
 case $1 in
   disable)
@@ -126,6 +155,10 @@ case $1 in
     hosts_action 1 "$2";;
   update)
     hosts_update;;
+  list-active)
+    hosts_list_active;;
+  list-inactive)
+    hosts_list_inactive;;
   --help)
     hosts_usage;;
   *)
