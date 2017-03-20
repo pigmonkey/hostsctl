@@ -65,8 +65,8 @@ by manipulating the /etc/hosts file.
 Arguments:
   enable [host]    enable specified host
   disable [host]   disable specified host
-  list-active      list active hosts
-  list-inactive    list inactive hosts
+  list-enabled     list enabled hosts
+  list-disabled    list disabled hosts
   update           update the /etc/hosts file
 
 END
@@ -117,8 +117,8 @@ hosts_action() {
   fi
 }
 
-# hosts_list_active: list active hosts
-hosts_list_active() {
+# hosts_list_enabled: list enabled hosts
+hosts_list_enabled() {
   hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${HOSTS})
   total=0
 
@@ -129,8 +129,8 @@ hosts_list_active() {
   msg_check "${white}total: ${yellow}${total}"
 }
 
-# hosts_list_inactive: list inactive hosts
-hosts_list_inactive() {
+# hosts_list_disabled: list disabled hosts
+hosts_list_disabled() {
   hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${HOSTS})
   total=0;
 
@@ -155,10 +155,10 @@ case $1 in
     hosts_action 1 "$2";;
   update)
     hosts_update;;
-  list-active)
-    hosts_list_active;;
-  list-inactive)
-    hosts_list_inactive;;
+  list-enabled)
+    hosts_list_enabled;;
+  list-disabled)
+    hosts_list_disabled;;
   --help)
     hosts_usage;;
   *)
