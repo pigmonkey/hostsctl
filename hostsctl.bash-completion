@@ -1,0 +1,17 @@
+# hostsctl.sh: bash completions
+# (https://github.com/0xl3vi/hostsctl)
+
+__hostsctl()
+{
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    opts="update enable disable list-enabled list-disabled --help"
+
+    if [[ ${cur} == * ]] ; then
+	COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
+        return 0
+    fi
+}
+
+complete -F __hostsctl hostsctl

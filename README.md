@@ -16,6 +16,18 @@ To install it right away, type:
 
 or download hostsctl.sh and run it.
 
+#### Bash-completions
+
+If you want bash-completions for hostsctl.
+
+* Linux (Archlinux)
+
+```{bash}
+  sudo cp hostsctl.bash-completion /usr/share/bash-completion/completions/hostsctl
+```
+
+If you want to add your platform, please do so.
+
 # Usage
 
 #### run:
