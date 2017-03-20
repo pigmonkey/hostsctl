@@ -144,8 +144,8 @@ hosts_list_disabled() {
 hosts_update() {
   root_check
 
-  if [ ! -f ${HOSTS}.bak ];then
-    mv "${HOSTS}" "${HOSTS}.bak"
+  if [ ! -f ${HOSTS}.bak ] && [ -f ${HOSTS} ];then
+    cp "${HOSTS}" "${HOSTS}.bak"
     msg_check "backup: ${blue}${HOSTS}${reset} saved as ${green}${HOSTS}.bak${reset}"
   fi
   curl -o "${HOSTS}" -L "${URL}" -s
