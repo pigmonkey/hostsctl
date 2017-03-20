@@ -108,7 +108,6 @@ hosts_action() {
     msg_check "$2: ${yellow}disabled${reset}"
   fi
 
-  # If the host not exists in /etc/hosts
   # create new entry.
   if [ -s ${TMP_HOSTS} ] && [ $1 -eq 0 ] && [[ ! $(grep "$2" ${HOSTS}) ]];then
     echo "${IP}   $2" >> ${HOSTS}
@@ -144,8 +143,13 @@ hosts_list_disabled() {
 # hosts_update: update the /etc/hosts list
 hosts_update() {
   root_check
+
+  if [ ! -f ${HOSTS}.bak ];then
+    mv "${HOSTS}" "${HOSTS}.bak"
+    msg_check "backup: ${blue}${HOSTS}${reset} saved as ${green}${HOSTS}.bak${reset}"
+  fi
   curl -o "${HOSTS}" -L "${URL}" -s
-  msg_check "/etc/hosts - ${blue}updated.${reset}"
+  msg_check "update: ${purple}$(wc -l ${HOSTS} )${reset} entries"
 }
 
 case $1 in
