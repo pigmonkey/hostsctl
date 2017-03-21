@@ -5,6 +5,8 @@ Hostsctl.sh allows you to control your /etc/hosts easily. you can block ads, por
 [![screenshot](https://raw.githubusercontent.com/wiki/0xl3vi/hostsctl/cast.gif)](cast)
 
 
+## Original hostsctl [original](https://github.com/0xl3vi/hostsctl/tree/original)
+
 # Installation
 
 To install it right away, type: 
