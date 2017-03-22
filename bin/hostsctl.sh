@@ -177,8 +177,8 @@ hosts_disable() {
 # hosts_list_enabled: list enabled hosts
 hosts_list_enabled() {
     total=0
-    if [ -e $ENABLED_DISABLED_HOSTS ]; then
-        hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
+    if [ -e $HOSTS ]; then
+        hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' $HOSTS)
         for host in $hosts; do
             printf "${green}\u25CF${reset} ${white}${host}${reset}\n"
             total=$((total + 1))
@@ -190,8 +190,8 @@ hosts_list_enabled() {
 # hosts_list_disabled: list disabled hosts
 hosts_list_disabled() {
     total=0
-    if [ -e $ENABLED_DISABLED_HOSTS ]; then
-        hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
+    if [ -e $HOSTS ]; then
+        hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' $HOSTS)
         for host in $hosts; do
             printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
             total=$((total + 1))
