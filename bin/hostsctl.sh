@@ -16,8 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-. /etc/hostsctl.conf
-
 # by https://github.com/mathiasbynens/dotfiles
 if tput setaf 1 &> /dev/null; then
     tput sgr0; # reset colors
@@ -54,6 +52,16 @@ HOSTS="${PREFIX}/hosts"
 REMOTE_HOSTS="${PREFIX}/hostsctl.d/30-remote"
 ENABLED_DISABLED_HOSTS="${PREFIX}/hostsctl.d/20-enabled-disabled"
 USER_HOSTS="${PREFIX}/hostsctl.d/10-hosts"
+CONFIG_FILE="${PREFIX}/hostsctl.conf"
+
+# Define default configuration.
+remote_hosts='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts' 
+ip='0.0.0.0'
+
+# Overwrite the defaults with a config file, if it exists.
+if [ -e $CONFIG_FILE ]; then
+    . $CONFIG_FILE
+fi
 
 hosts_usage() {
 cat << END
