@@ -179,10 +179,10 @@ hosts_list() {
     total=0
     if [ -e $HOSTS ]; then
         if [ $1 = "enabled" ]; then
-            local match_string="#0."
+            local match_string="#$(echo $ip | awk '{print substr($0,0,2)}')"
             local match_color=$green
         elif [ $1 = "disabled" ]; then
-            local match_string="0.0"
+            local match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
             local match_color=$red
         fi
         hosts=$(awk -v match_string="$match_string" '{ if ( substr($0, 1, 3) == match_string ) printf("%s\n", $2) }' $HOSTS)
