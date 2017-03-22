@@ -51,9 +51,10 @@ fi;
 
 PREFIX="/etc"
 HOSTS="${PREFIX}/hosts"
-REMOTE_HOSTS="${PREFIX}/hostsctl.d/30-remote"
-ENABLED_DISABLED_HOSTS="${PREFIX}/hostsctl.d/20-enabled-disabled"
-USER_HOSTS="${PREFIX}/hostsctl.d/10-hosts"
+HOSTSCTL_DIR="${PREFIX}/hostsctl.d"
+REMOTE_HOSTS="${HOSTSCTL_DIR}/30-remote"
+ENABLED_DISABLED_HOSTS="${HOSTSCTL_DIR}/20-enabled-disabled"
+USER_HOSTS="${HOSTSCTL_DIR}/10-hosts"
 
 hosts_usage() {
 cat << END
@@ -108,12 +109,14 @@ hosts_export() {
 # hosts_merge: this will merge /etc/hostsctl.d/ to /etc/hosts
 hosts_merge() {
   root_check
+  init
 
   hosts_export > ${HOSTS}
 }
 
 hosts_enable() {
   root_check
+  init
 
   local filename
   local tmpfile=$(mktemp);
@@ -143,6 +146,7 @@ hosts_enable() {
 
 hosts_disable() {
   root_check
+  init
 
   local filename
   local tmpfile=$(mktemp);
@@ -172,34 +176,53 @@ hosts_disable() {
 
 # hosts_list_enabled: list enabled hosts
 hosts_list_enabled() {
-  hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
-  total=0
-
-  for host in $hosts;do
-    printf "${green}\u25CF${reset} ${white}${host}${reset}\n"
-    total=$[$total+1]
-  done
-  msg_check "${white}total: ${yellow}${total}"
+    total=0
+    if [ -e $ENABLED_DISABLED_HOSTS ]; then
+        hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
+        for host in $hosts; do
+            printf "${green}\u25CF${reset} ${white}${host}${reset}\n"
+            total=$((total + 1))
+        done
+    fi
+    msg_check "${white}total: ${yellow}${total}"
 }
 
 # hosts_list_disabled: list disabled hosts
 hosts_list_disabled() {
-  hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
-  total=0;
-
-  for host in $hosts;do
-    printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
-    total=$[$total+1]
-  done
-  msg_check "${white}total: ${yellow}${total}"
+    total=0
+    if [ -e $ENABLED_DISABLED_HOSTS ]; then
+        hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
+        for host in $hosts; do
+            printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
+            total=$((total + 1))
+        done
+    fi
+    msg_check "${white}total: ${yellow}${total}"
 }
 
 # hosts_update_remote: update the remote hosts
 hosts_update_remote() {
   root_check
+  init
 
   curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
   msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
+}
+
+# init: initialize required filed
+init() {
+    if [ ! -d $HOSTSCTL_DIR ]; then
+        mkdir $HOSTSCTL_DIR
+    fi
+    if [ ! -e $USER_HOSTS ]; then
+        cp -v $HOSTS $USER_HOSTS
+    fi
+    if [ ! -e $REMOTE_HOSTS ]; then
+        touch $REMOTE_HOSTS
+    fi
+    if [ ! -e $ENABLED_DISABLED_HOSTS ]; then
+        touch $ENABLED_DISABLED_HOSTS
+    fi
 }
 
 case $1 in
