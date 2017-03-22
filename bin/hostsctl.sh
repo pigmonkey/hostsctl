@@ -55,7 +55,7 @@ USER_HOSTS="${PREFIX}/hostsctl.d/10-hosts"
 CONFIG_FILE="${PREFIX}/hostsctl.conf"
 
 # Define default configuration.
-remote_hosts='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts' 
+remote_hosts=''
 ip='0.0.0.0'
 
 # Overwrite the defaults with a config file, if it exists.
@@ -205,9 +205,13 @@ hosts_list_disabled() {
 # hosts_update_remote: update the remote hosts
 hosts_update_remote() {
   root_check
-
-  curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
-  msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
+  if [ ! -z $remote_hosts ]; then
+      curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
+      msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
+  else
+      msg_error "no remote hosts URL defined"
+      exit 78
+  fi
 }
 
 case $1 in
