@@ -102,7 +102,21 @@ mktemp() {
 }
 
 hosts_export() {
-  cat ${PREFIX}/hostsctl.d/*
+    # Concatonate all files except the remote hosts file.
+    local all_entries=$(find /etc/hostsctl.d/ ! -samefile /etc/hostsctl.d/30-remote -type f | sort | xargs cat)
+    # Remove all comments from remote hosts file.
+    local remote_entries=$(sed '/^\s*#/d' $REMOTE_HOSTS | sed '/^\s*$/d')
+    # Remove all entries from remote hosts file that are present in
+    # enabled-disabled file.
+    patterns="grep -v"
+    while read enabled_disabled; do
+        local search=$(echo "$enabled_disabled" | sed 's/^#//g')
+        patterns="$patterns -e \"^$search\""
+    done < $ENABLED_DISABLED_HOSTS
+    local deduped_remote=$(echo "$remote_entries" | eval $patterns)
+    # Append the duduped remote entries to the rest.
+    all_entries="$all_entries"$'\n################\n# Remote Hosts #\n################\n'"$deduped_remote"
+    echo "$all_entries"
 }
 
 # hosts_merge: this will merge /etc/hostsctl.d/ to /etc/hosts
