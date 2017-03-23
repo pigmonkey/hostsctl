@@ -103,7 +103,7 @@ mktemp() {
 
 hosts_export() {
     # Concatonate all files except the remote hosts file.
-    local all_entries=$(find /etc/hostsctl.d/ ! -samefile /etc/hostsctl.d/30-remote -type f | sort | xargs cat)
+    local all_entries=$(find "${PREFIX}/hostsctl.d/" ! -samefile "$REMOTE_HOSTS" -type f | sort | xargs cat)
     # Remove all comments from remote hosts file.
     local remote_entries=$(sed '/^\s*#/d' $REMOTE_HOSTS | sed '/^\s*$/d')
     # Remove all entries from remote hosts file that are present in
