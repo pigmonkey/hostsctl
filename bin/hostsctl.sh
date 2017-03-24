@@ -64,7 +64,6 @@ if [ -e $CONFIG_FILE ]; then
     . $CONFIG_FILE
 fi
 
-
 hosts_usage() {
 cat << END
 Usage $0 [option] [host] ...
@@ -113,13 +112,26 @@ mktemp() {
 }
 
 hosts_export() {
-  cat ${PREFIX}/hostsctl.d/*
+    # Concatonate all files except the remote hosts file.
+    local all_entries=$(find "${PREFIX}/hostsctl.d/" ! -samefile "$REMOTE_HOSTS" -type f | sort | xargs cat)
+    # Remove all comments from remote hosts file.
+    local remote_entries=$(sed '/^\s*#/d' $REMOTE_HOSTS | sed '/^\s*$/d')
+    # Remove all entries from remote hosts file that are present in
+    # enabled-disabled file.
+    patterns="grep -v"
+    while read enabled_disabled; do
+        local search=$(echo "$enabled_disabled" | sed 's/^#//g')
+        patterns="$patterns -e \"^$search\""
+    done < $ENABLED_DISABLED_HOSTS
+    local deduped_remote=$(echo "$remote_entries" | eval $patterns)
+    # Append the duduped remote entries to the rest.
+    all_entries="$all_entries"$'\n################\n# Remote Hosts #\n################\n'"$deduped_remote"
+    echo "$all_entries"
 }
 
 # hosts_merge: this will merge /etc/hostsctl.d/ to /etc/hosts
 hosts_merge() {
   root_check
-  init
 
   hosts_export > ${HOSTS}
   msg_check "merged hosts to ${HOSTS}"
@@ -127,7 +139,6 @@ hosts_merge() {
 
 hosts_enable() {
   root_check
-  init
 
   local filename
   local tmpfile=$(mktemp);
@@ -157,7 +168,6 @@ hosts_enable() {
 
 hosts_disable() {
   root_check
-  init
 
   local filename
   local tmpfile=$(mktemp);
@@ -185,24 +195,28 @@ hosts_disable() {
   msg_check "$1: ${yellow}disabled${reset}"
 }
 
-# hosts_list: list enabled or disabled hosts
-hosts_list() {
-    total=0
-    if [ -e $HOSTS ]; then
-        if [ $1 = "enabled" ]; then
-            local match_string="#$(echo $ip | awk '{print substr($0,0,2)}')"
-            local match_color=$green
-        elif [ $1 = "disabled" ]; then
-            local match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
-            local match_color=$red
-        fi
-        hosts=$(awk -v match_string="$match_string" '{ if ( substr($0, 1, 3) == match_string ) printf("%s\n", $2) }' $HOSTS)
-        for host in $hosts; do
-            printf "$match_color\u25CF${reset} ${white}${host}${reset}\n"
-            total=$((total + 1))
-        done
-    fi
-    msg_check "${white}total: ${yellow}${total}"
+# hosts_list_enabled: list enabled hosts
+hosts_list_enabled() {
+  hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
+  total=0
+
+  for host in $hosts;do
+    printf "${green}\u25CF${reset} ${white}${host}${reset}\n"
+    total=$[$total+1]
+  done
+  msg_check "${white}total: ${yellow}${total}"
+}
+
+# hosts_list_disabled: list disabled hosts
+hosts_list_disabled() {
+  hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${ENABLED_DISABLED_HOSTS})
+  total=0;
+
+  for host in $hosts;do
+    printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
+    total=$[$total+1]
+  done
+  msg_check "${white}total: ${yellow}${total}"
 }
 
 # fetch_updates: update the remote hosts file
@@ -252,9 +266,9 @@ case $1 in
   fetch-updates)
     fetch_updates;;
   list-enabled)
-    hosts_list "enabled";;
+    hosts_list_enabled;;
   list-disabled)
-    hosts_list "disabled";;
+    hosts_list_disabled;;
   --help)
     hosts_usage;;
   *)
