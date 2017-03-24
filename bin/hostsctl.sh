@@ -75,11 +75,12 @@ by manipulating the /etc/hosts file.
 Arguments:
   enable [host]    enable specified host
   disable [host]   disable specified host.
-  export           export hosts
-  merge            merge hosts to ${PREFIX}/hosts
+  update           update remote hosts and apply to ${HOSTS}
+  export           export hosts to stdout
+  merge            merge hosts to ${HOSTS}
   list-enabled     list enabled hosts
   list-disabled    list disabled hosts
-  update-remote    update remote hosts.
+  fetch-updates    update remote hosts without applying
 
 Full documentation at: <http://git.io/hostsctl>
 END
@@ -121,6 +122,7 @@ hosts_merge() {
   init
 
   hosts_export > ${HOSTS}
+  msg_check "merged hosts to ${HOSTS}"
 }
 
 hosts_enable() {
@@ -203,8 +205,8 @@ hosts_list() {
     msg_check "${white}total: ${yellow}${total}"
 }
 
-# hosts_update_remote: update the remote hosts
-hosts_update_remote() {
+# fetch_updates: update the remote hosts file
+fetch_updates() {
   root_check
   if [ ! -z $remote_hosts ]; then
       curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
@@ -214,6 +216,11 @@ hosts_update_remote() {
       exit 78
   fi
 }
+
+# hosts_update: update the remote hosts and export to $HOSTS
+hosts_update() {
+    fetch_updates
+    hosts_merge
 
 # init: initialize required filed
 init() {
@@ -240,8 +247,10 @@ case $1 in
     hosts_merge;;
   export)
     hosts_export;;
-  update-remote)
-    hosts_update_remote;;
+  update)
+    hosts_update;;
+  fetch-updates)
+    fetch_updates;;
   list-enabled)
     hosts_list "enabled";;
   list-disabled)
