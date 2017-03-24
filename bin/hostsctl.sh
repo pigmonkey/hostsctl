@@ -16,8 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-. /etc/hostsctl.conf
-
 # by https://github.com/mathiasbynens/dotfiles
 if tput setaf 1 &> /dev/null; then
     tput sgr0; # reset colors
@@ -51,9 +49,20 @@ fi;
 
 PREFIX="/etc"
 HOSTS="${PREFIX}/hosts"
-REMOTE_HOSTS="${PREFIX}/hostsctl.d/30-remote"
-ENABLED_DISABLED_HOSTS="${PREFIX}/hostsctl.d/20-enabled-disabled"
-USER_HOSTS="${PREFIX}/hostsctl.d/10-hosts"
+HOSTSCTL_DIR="${PREFIX}/hostsctl.d"
+REMOTE_HOSTS="${HOSTSCTL_DIR}/30-remote"
+ENABLED_DISABLED_HOSTS="${HOSTSCTL_DIR}/20-enabled-disabled"
+USER_HOSTS="${HOSTSCTL_DIR}/10-hosts"
+CONFIG_FILE="${PREFIX}/hostsctl.conf"
+
+# Define default configuration.
+remote_hosts=''
+ip='0.0.0.0'
+
+# Overwrite the defaults with a config file, if it exists.
+if [ -e $CONFIG_FILE ]; then
+    . $CONFIG_FILE
+fi
 
 hosts_usage() {
 cat << END
@@ -211,9 +220,13 @@ hosts_list_disabled() {
 # hosts_update_remote: update the remote hosts
 hosts_update_remote() {
   root_check
-
-  curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
-  msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
+  if [ ! -z $remote_hosts ]; then
+      curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
+      msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
+  else
+      msg_error "no remote hosts URL defined"
+      exit 78
+  fi
 }
 
 case $1 in
