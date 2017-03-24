@@ -1,11 +1,13 @@
 # :no_entry_sign: hostsctl
 
+# the README.md will updated soon!
+
 Hostsctl.sh allows you to control your /etc/hosts easily. you can block ads, porn, social networks with one command.
 
 [![screenshot](https://raw.githubusercontent.com/wiki/0xl3vi/hostsctl/cast.gif)](cast)
 
 
-## Original hostsctl [original](https://github.com/0xl3vi/hostsctl/tree/original)
+### [Original](https://github.com/0xl3vi/hostsctl/tree/original) branch
 
 # Installation
 
