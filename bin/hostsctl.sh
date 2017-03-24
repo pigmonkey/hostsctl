@@ -207,10 +207,19 @@ hosts_list_disabled() {
 # fetch_updates: update the remote hosts file
 fetch_updates() {
   root_check
+  
+  local centries=0;
+  local nentries=0;
 
   if [ ! -z $remote_hosts ]; then
+      if [ -f ${REMOTE_HOSTS} ];then
+	centries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
+      fi
       curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
-      msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
+      # Diff against the current $REMOTE_HOSTS
+      nentries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
+
+      msg_check "update: ${purple}$[nentries - centries]${reset} new entries"
   else
       msg_error "no remote hosts URL defined"
       exit 1
