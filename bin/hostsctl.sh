@@ -74,11 +74,12 @@ by manipulating the /etc/hosts file.
 Arguments:
   enable [host]    enable specified host
   disable [host]   disable specified host.
-  export           export hosts
-  merge            merge hosts to ${PREFIX}/hosts
+  update           update remote hosts and apply to ${HOSTS}
+  export           export hosts to stdout
+  merge            merge hosts to ${HOSTS}
   list-enabled     list enabled hosts
   list-disabled    list disabled hosts
-  update-remote    update remote hosts.
+  fetch-updates    update remote hosts without applying
 
 Full documentation at: <http://git.io/hostsctl>
 END
@@ -133,6 +134,7 @@ hosts_merge() {
   root_check
 
   hosts_export > ${HOSTS}
+  msg_check "merged hosts to ${HOSTS}"
 }
 
 hosts_enable() {
@@ -217,8 +219,8 @@ hosts_list_disabled() {
   msg_check "${white}total: ${yellow}${total}"
 }
 
-# hosts_update_remote: update the remote hosts
-hosts_update_remote() {
+# fetch_updates: update the remote hosts file
+fetch_updates() {
   root_check
   if [ ! -z $remote_hosts ]; then
       curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
@@ -227,6 +229,27 @@ hosts_update_remote() {
       msg_error "no remote hosts URL defined"
       exit 78
   fi
+}
+
+# hosts_update: update the remote hosts and export to $HOSTS
+hosts_update() {
+    fetch_updates
+    hosts_merge
+
+# init: initialize required filed
+init() {
+    if [ ! -d $HOSTSCTL_DIR ]; then
+        mkdir $HOSTSCTL_DIR
+    fi
+    if [ ! -e $USER_HOSTS ]; then
+        cp -v $HOSTS $USER_HOSTS
+    fi
+    if [ ! -e $REMOTE_HOSTS ]; then
+        touch $REMOTE_HOSTS
+    fi
+    if [ ! -e $ENABLED_DISABLED_HOSTS ]; then
+        touch $ENABLED_DISABLED_HOSTS
+    fi
 }
 
 case $1 in
@@ -238,8 +261,10 @@ case $1 in
     hosts_merge;;
   export)
     hosts_export;;
-  update-remote)
-    hosts_update_remote;;
+  update)
+    hosts_update;;
+  fetch-updates)
+    fetch_updates;;
   list-enabled)
     hosts_list_enabled;;
   list-disabled)
