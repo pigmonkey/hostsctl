@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Copyright (c) 2017 Levi Sabah <0xl3vi@gmail.com> 
+# Copyright (c) 2017 hostsctl.sh authors and contributors
 # (https://git.io/hostsctl/)
 #
 # This program is free software: you can redistribute it and/or modify
