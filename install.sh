@@ -33,32 +33,46 @@ msg_info() {
 hostsctl_install() {
   local prefix="$1"
 
-  printf "\n=> progress: \n\n"
+  printf "* Installaing hostsctl ...\n"
   # Install files
   #cp -av etc/* "/etc/"  # Do NOT ship to default hostsctl.conf file.
 
-  cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
+  printf "* " && cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
   chmod +x "${prefix}/bin/hostsctl"
 
+  # Here we are creating the hostsctl.d/ directory.
   sudo hostsctl update
 
   # Install bash-completions
   # TODO: zsh-completions
   # ARCHLINUX
   if [ -f "/etc/arch-release" ];then
-    cp -v hostsctl.bash-completion "${prefix}/share/bash-completion/completions"
+    printf "* " && cp -v hostsctl.bash-completion "${prefix}/share/bash-completion/completions"
   fi
 
   # Copy your original /etc/hosts to /etc/hostsctl.d/10-hosts
-  cp -v "/etc/hosts" "/etc/hostsctl.d/10-hosts"
+  printf "* " && cp -v "/etc/hosts" "/etc/hostsctl.d/10-hosts"
   
-  printf "\n"
-
   sudo hostsctl merge # Merge hosts
    
-  printf "\ncongrats! hostsctl.sh installed on your system.\n\n"
+  printf "\n* congrats! hostsctl.sh installed on your system.\n\n"
   echo "1. cd /etc/hostsctl.d/ : to manage your hosts"
   echo "2. Full documentation at: <http://git.io/hostsctl>"
+}
+
+hosts_uninstall() {
+  local prefix="$1"
+
+  printf "* Uninstalling hostsctl ...\n"
+  rm "${prefix}/bin/hostsctl"
+  printf "* Restoring old /etc/hosts file ...\n"
+  cp "/etc/hostsctl.d/10-hosts" "/etc/hosts"
+  rm -r /etc/hostsctl*
+
+  if [ -f "/etc/arch-release" ];then
+    rm "${prefix}/share/bash-completion/completions/hostsctl.bash-completion"
+  fi
+  printf "* hostsctl is no longer installed on your system.\n"
 }
 
 usage() {
@@ -68,19 +82,20 @@ Usage: $0 [--prefix] ...
 Install.sh will install hostsctl on your system.
 
 Arguments:
-  --prefix  set installation prefix (default: ${PREFIX})
+  --prefix   set installation prefix (default: ${PREFIX})
+  uninstall  uninstall hostsctl.
 
 Full documentation at: <http://git.io/hostsctl>
 EOF
 }
 
+root_check 
+
 case $1 in
   --prefix)
     PREFIX="$2";;
+  uninstall)
+    hosts_uninstall "${PREFIX}";;
   *)
-    ;;
+    hostsctl_install "${PREFIX}"
 esac
-
-# Installation starts here
-root_check
-hostsctl_install "${PREFIX}"
