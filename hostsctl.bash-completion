@@ -6,7 +6,7 @@ __hostsctl()
     local cur prev opts
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
-    opts="remote-update enable disable export list-enabled list-disabled merge --help"
+    opts="fetch-updates enable disable export list-enabled list-disabled merge --help"
 
     if [[ ${cur} == * ]] ; then
 	COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )
