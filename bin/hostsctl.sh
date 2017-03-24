@@ -214,14 +214,15 @@ fetch_updates() {
       msg_check "update: ${purple}$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)${reset} new entries"
   else
       msg_error "no remote hosts URL defined"
-      exit 78
+      exit 1
   fi
 }
 
 # hosts_update: update the remote hosts and export to $HOSTS
 hosts_update() {
-  init
+  root_check
 
+  init
   fetch_updates
   hosts_merge
 }
