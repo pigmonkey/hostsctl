@@ -40,7 +40,7 @@ hostsctl_install() {
   cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
   chmod +x "${prefix}/bin/hostsctl"
 
-  sudo hostsctl fetch-updates
+  sudo hostsctl update
 
   # Install bash-completions
   # TODO: zsh-completions
