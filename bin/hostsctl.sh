@@ -235,6 +235,7 @@ fetch_updates() {
 hosts_update() {
     fetch_updates
     hosts_merge
+}
 
 # init: initialize required filed
 init() {
