@@ -30,28 +30,8 @@ msg_info() {
   printf "<i> $1\n"
 }
 
-header() {
-cat << END
-     ._________________.
-     |.---------------.|
-     ||   Installing  ||
-     ||   ......      ||
-     ||   hostsctl.sh ||
-     ||     .......   ||
-     || ...........   ||
-     ||_______________||
-     /.-.-.-.-.-.-.-.-.\\
-    /.-.-.-.-.-.-.-.-.-.\\
-   /.-.-.-.-.-.-.-.-.-.-.\\
-  /______/__________\\___o_\\
-  \\_______________________/
-END
-}
-
 hostsctl_install() {
   local prefix="$1"
-  
-  header # just for fun (:
 
   printf "\n=> progress: \n\n"
   # Install files
@@ -63,7 +43,7 @@ hostsctl_install() {
   # TODO: zsh-completions
   # ARCHLINUX
   if [ -f "/etc/arch-release" ];then
-    cp -v contrib/hostsctl.bash-completion "${prefix}/share/bash-completion/completions"
+    cp -v hostsctl.bash-completion "${prefix}/share/bash-completion/completions"
   fi
 
   # Copy your original /etc/hosts to /etc/hostsctl.d/10-hosts
@@ -71,7 +51,7 @@ hostsctl_install() {
   
   printf "\n"
   # Update /etc/hostsctl.d/30-remote
-  sudo hostsctl update-remote
+  sudo hostsctl fetch-updates
   sudo hostsctl merge # Merge hosts
    
   printf "\ncongrats! hostsctl.sh installed on your system.\n\n"
