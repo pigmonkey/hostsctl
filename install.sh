@@ -35,9 +35,12 @@ hostsctl_install() {
 
   printf "\n=> progress: \n\n"
   # Install files
-  cp -av etc/* "/etc/"  
+  #cp -av etc/* "/etc/"  # Do NOT ship to default hostsctl.conf file.
+
   cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
   chmod +x "${prefix}/bin/hostsctl"
+
+  sudo hostsctl fetch-updates
 
   # Install bash-completions
   # TODO: zsh-completions
@@ -50,8 +53,7 @@ hostsctl_install() {
   cp -v "/etc/hosts" "/etc/hostsctl.d/10-hosts"
   
   printf "\n"
-  # Update /etc/hostsctl.d/30-remote
-  sudo hostsctl fetch-updates
+
   sudo hostsctl merge # Merge hosts
    
   printf "\ncongrats! hostsctl.sh installed on your system.\n\n"
