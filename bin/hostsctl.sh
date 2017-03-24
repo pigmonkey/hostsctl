@@ -120,7 +120,6 @@ hosts_merge() {
   root_check
 
   hosts_export > ${HOSTS}
-  msg_check "merged hosts to ${HOSTS}"
 }
 
 hosts_enable() {
@@ -234,7 +233,7 @@ init() {
   fi
   
   if [ ! -e $USER_HOSTS ]; then
-    cp -v $HOSTS $USER_HOSTS
+    cp $HOSTS $USER_HOSTS
   fi
     
   if [ ! -e $REMOTE_HOSTS ]; then
