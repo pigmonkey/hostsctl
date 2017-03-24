@@ -112,21 +112,26 @@ mktemp() {
 }
 
 hosts_export() {
-    # Concatonate all files except the remote hosts file.
-    local all_entries=$(find "${PREFIX}/hostsctl.d/" ! -samefile "$REMOTE_HOSTS" -type f | sort | xargs cat)
-    # Remove all comments from remote hosts file.
-    local remote_entries=$(sed '/^\s*#/d' $REMOTE_HOSTS | sed '/^\s*$/d')
-    # Remove all entries from remote hosts file that are present in
-    # enabled-disabled file.
-    patterns="grep -v"
-    while read enabled_disabled; do
-        local search=$(echo "$enabled_disabled" | sed 's/^#//g')
-        patterns="$patterns -e \"^$search\""
-    done < $ENABLED_DISABLED_HOSTS
-    local deduped_remote=$(echo "$remote_entries" | eval $patterns)
-    # Append the duduped remote entries to the rest.
-    all_entries="$all_entries"$'\n################\n# Remote Hosts #\n################\n'"$deduped_remote"
-    echo "$all_entries"
+  # Concatonate all files except the remote hosts file.
+  local all_entries=$(find "${PREFIX}/hostsctl.d/" ! -samefile "$REMOTE_HOSTS" -type f | sort | xargs cat)
+    
+  # Remove all comments from remote hosts file.
+  local remote_entries=$(sed '/^\s*#/d' $REMOTE_HOSTS | sed '/^\s*$/d')
+   
+  # TODO: using awk instead of sed(1)
+  # Remove all entries from remote hosts file that are present in
+  # enabled-disabled file.
+  patterns="grep -v"
+  while read enabled_disabled; do
+    local search=$(echo "$enabled_disabled" | sed 's/^#//g')
+    patterns="$patterns -e \"^$search\""
+  done < $ENABLED_DISABLED_HOSTS
+  
+  local deduped_remote=$(echo "$remote_entries" | eval $patterns)
+  
+  # Append the duduped remote entries to the rest.
+  all_entries="$all_entries"$'\n################\n# Remote Hosts #\n################\n'"$deduped_remote"
+  echo "$all_entries"
 }
 
 # hosts_merge: this will merge /etc/hostsctl.d/ to /etc/hosts
@@ -233,24 +238,27 @@ fetch_updates() {
 
 # hosts_update: update the remote hosts and export to $HOSTS
 hosts_update() {
-    fetch_updates
-    hosts_merge
+  fetch_updates
+  hosts_merge
 }
 
 # init: initialize required filed
 init() {
-    if [ ! -d $HOSTSCTL_DIR ]; then
-        mkdir $HOSTSCTL_DIR
-    fi
-    if [ ! -e $USER_HOSTS ]; then
-        cp -v $HOSTS $USER_HOSTS
-    fi
-    if [ ! -e $REMOTE_HOSTS ]; then
-        touch $REMOTE_HOSTS
-    fi
-    if [ ! -e $ENABLED_DISABLED_HOSTS ]; then
-        touch $ENABLED_DISABLED_HOSTS
-    fi
+  if [ ! -d $HOSTSCTL_DIR ]; then
+    mkdir $HOSTSCTL_DIR
+  fi
+  
+  if [ ! -e $USER_HOSTS ]; then
+    cp -v $HOSTS $USER_HOSTS
+  fi
+    
+  if [ ! -e $REMOTE_HOSTS ]; then
+    touch $REMOTE_HOSTS
+  fi
+    
+  if [ ! -e $ENABLED_DISABLED_HOSTS ]; then
+    touch $ENABLED_DISABLED_HOSTS
+  fi
 }
 
 case $1 in
