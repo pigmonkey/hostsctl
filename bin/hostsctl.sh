@@ -104,7 +104,7 @@ root_check() {
   fi
 }
 
-# mktemp: create a temporary file or directory
+# mktemp: create a temporary file with random name
 mktemp() {
   local filename="/tmp/hostsctl-${RANDOM}"
   touch "$filename"
