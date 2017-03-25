@@ -111,6 +111,7 @@ mktemp() {
   echo "${filename}"
 }
 
+# hosts_export: export /etc/hostsctl.d/ to stdout.
 hosts_export() {
   cat /etc/hostsctl.d/*
 }
@@ -122,7 +123,7 @@ hosts_merge() {
   hosts_export > ${HOSTS}
 }
 
-hosts_enable() {
+_hosts_enable() {
   root_check
 
   local filename
@@ -151,7 +152,7 @@ hosts_enable() {
   msg_check "$1: ${green}enabled${reset}"
 }
 
-hosts_disable() {
+_hosts_disable() {
   root_check
 
   local filename
@@ -178,6 +179,22 @@ hosts_disable() {
 
   hosts_merge
   msg_check "$1: ${yellow}disabled${reset}"
+}
+
+hosts_enable() {
+  local hosts="${@:2}"
+
+  for host in ${hosts};do
+    _hosts_enable "$host"
+  done
+}
+
+hosts_disable() {
+  local hosts="${@:2}"
+
+  for host in ${hosts};do
+    _hosts_disable "$host"
+  done
 }
 
 # hosts_list_enabled: list enabled hosts
@@ -256,9 +273,9 @@ init() {
 
 case $1 in
   disable)
-    hosts_disable "$2";;
+    hosts_disable "$@";;
   enable)
-    hosts_enable  "$2";;
+    hosts_enable  "$@";;
   merge)
     hosts_merge;;
   export)
