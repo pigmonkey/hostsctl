@@ -10,7 +10,7 @@ Hostsctl.sh allows you to control your /etc/hosts easily. you can block ads, por
 To install it right away, type: 
 
 ```{bash}
-  sudo curl -L https://git.io/vy5xx -o /usr/local/bin/hostsctl
+  sudo curl -L https://git.io/hostsctl.sh -o /usr/local/bin/hostsctl
   sudo chmod +x /usr/local/bin/hostsctl
 ```
 
