@@ -24,6 +24,10 @@ Installation can be performed by executing the provided `install.sh` script as r
 $ sudo ./install.sh
 ```
 
+#### Packages
+
+* Archlinux [hostsctl-git](https://aur.archlinux.org/packages/hostsctl-git/) package.
+
 ### Bash-completions
 
 Bash completions are automatically installed by the `install.sh` script on Arch Linux systems. On other systems, copy the provided `hostsctl.bash-completion` file to the appropriate directory.
