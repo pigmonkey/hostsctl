@@ -80,6 +80,7 @@ Arguments:
   list-enabled     list enabled hosts
   list-disabled    list disabled hosts
   fetch-updates    update remote hosts without applying
+  restore	   restore ${HOSTS} from ${USER_HOSTS}.
 
 Full documentation at: <http://git.io/hostsctl>
 END
@@ -94,7 +95,19 @@ msg_check() {
 # msg_error: show error message
 # @param $@: text
 msg_error() {
-  printf "${red}# error:${reset} $@\n"
+  printf "${red}\u2744${reset} $@\n"
+}
+
+# msg_warning: show warning message.
+# @param $@: text
+msg_warning() {
+  printf "${yellow}\u2622${reset} $@\n"
+}
+
+# msg_info: show info message
+# @param $@: text
+msg_info() {
+  printf "${blue}\u221E${reset} $@\n"
 }
 
 root_check() {
@@ -252,6 +265,15 @@ hosts_update() {
   hosts_merge
 }
 
+# hosts_restore: restore original /etc/hosts temporary.
+hosts_restore() {
+  root_check
+
+  cp ${USER_HOSTS} /etc/hosts
+  msg_check "${HOSTS} has been restored."
+  msg_info  "run ${yellow}\'hostsctl merge\'${reset} to undo."
+}
+
 # init: initialize required filed
 init() {
   if [ ! -d $HOSTSCTL_DIR ]; then
@@ -288,6 +310,8 @@ case $1 in
     hosts_list_enabled;;
   list-disabled)
     hosts_list_disabled;;
+  restore)
+    hosts_restore;;
   --help)
     hosts_usage;;
   *)
