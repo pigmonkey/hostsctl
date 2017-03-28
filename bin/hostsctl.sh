@@ -231,7 +231,7 @@ hosts_list_disabled() {
     printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
     total=$[$total+1]
   done
-  msg_check "${white}total: ${yellow}${total}"
+  msg_check "${white}total: ${yellow}${total}${reset}"
 }
 
 # fetch_updates: update the remote hosts file
