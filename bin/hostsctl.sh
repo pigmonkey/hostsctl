@@ -210,27 +210,26 @@ hosts_disable() {
   done
 }
 
-# hosts_list_enabled: list enabled hosts
-hosts_list_enabled() {
-  hosts=$(awk '{ if ( substr($0, 1, 3) == "#0." ) printf("%s\n", $2) }' ${HOSTS})
+# hosts_list: list enabled or disabled hosts
+hosts_list() {
   total=0
+  if [ -e $HOSTS ]; then
+    if [ "$1" = "enabled" ]; then
+      local match_string
+      match_string="#$(echo $ip | awk '{print substr($0,0,2)}')"
+      local match_color=$green
+    elif [ "$1" = "disabled" ]; then
+      local match_string
+      match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
+      local match_color=$red
+    fi
+    hosts=$(awk -v match_string="$match_string" '{ if ( substr($0, 1, 3) == match_string ) printf("%s\n", $2) }' $HOSTS)
 
-  for host in $hosts;do
-    printf "${green}\u25CF${reset} ${white}${host}${reset}\n"
-    total=$[$total+1]
-  done
-  msg_check "${white}total: ${yellow}${total}${reset}"
-}
-
-# hosts_list_disabled: list disabled hosts
-hosts_list_disabled() {
-  hosts=$(awk '{ if ( substr($0, 1, 3) == "0.0" ) printf("%s\n", $2) }' ${HOSTS})
-  total=0;
-
-  for host in $hosts;do
-    printf "${red}\u25CF${reset} ${white}${host}${reset}\n"
-    total=$[$total+1]
-  done
+    for host in $hosts;do
+      printf "$match_color\u25CF${reset} ${white}${host}${reset}\n"
+      total=$((total + 1))
+    done
+  fi
   msg_check "${white}total: ${yellow}${total}${reset}"
 }
 
@@ -307,9 +306,9 @@ case $1 in
   fetch-updates)
     fetch_updates;;
   list-enabled)
-    hosts_list_enabled;;
+    hosts_list "enabled";;
   list-disabled)
-    hosts_list_disabled;;
+    hosts_list "disabled";;
   restore)
     hosts_restore;;
   --help)
