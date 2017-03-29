@@ -140,7 +140,7 @@ Any collaboration is welcome!
 ## Thanks
 
 * Steven Black [hosts](https://github.com/StevenBlack/hosts) repo for inspiring me to create this.
-
+* Ty-Lucas Kelley [github-templates](https://github.com/tylucaskelley/github-templates)
 
 ## License
 
