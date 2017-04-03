@@ -4,7 +4,7 @@ TODO
 If you want to help out please pick one of:
 
 * Remove any duplicates in the hosts file when calling hosts_update
-* Remove comments in 30-remote on merge.
+* [DONE] Remove comments in 30-remote on merge.
 * Script for installing hostsctl on android.
 * Bug fixes.
 * Testing hostsctl on Mac/Debian

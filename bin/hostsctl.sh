@@ -64,28 +64,6 @@ if [ -e $CONFIG_FILE ]; then
     . $CONFIG_FILE
 fi
 
-hosts_usage() {
-cat << END
-Usage $0 [option] [host] ...
-  
-Hostsctl.sh allows you to block ads, social networks, porn, etc,
-by manipulating the /etc/hosts file.
-
-Arguments:
-  enable [host]    enable specified host
-  disable [host]   disable specified host.
-  update           update remote hosts and apply to ${HOSTS}
-  export           export hosts to stdout
-  merge            merge hosts to ${HOSTS}
-  list-enabled     list enabled hosts
-  list-disabled    list disabled hosts
-  fetch-updates    update remote hosts without applying
-  restore	   restore ${HOSTS} from ${USER_HOSTS}.
-
-Full documentation at: <http://git.io/hostsctl>
-END
-}
-
 # msg_check: show message when successfully done
 # @param $@: text
 msg_check() {
@@ -122,6 +100,28 @@ mktemp() {
   local filename="/tmp/hostsctl-${RANDOM}"
   touch "$filename"
   echo "${filename}"
+}
+
+hosts_usage() {
+cat << END
+Usage $0 [option] [host] ...
+ 
+Hostsctl.sh allows you to block ads, social networks, porn, etc,
+by manipulating the /etc/hosts file.
+
+Arguments:
+  enable [host]    enable specified host
+  disable [host]   disable specified host.
+  update           update remote hosts and apply to ${HOSTS}
+  export           export hosts to stdout
+  merge            merge hosts to ${HOSTS}
+  list-enabled     list enabled hosts
+  list-disabled    list disabled hosts
+  fetch-updates    update remote hosts without applying
+  restore	   restore ${HOSTS} from ${USER_HOSTS}.
+
+Full documentation at: <http://git.io/hostsctl>
+END
 }
 
 # hosts_export: export /etc/hostsctl.d/ to stdout.
@@ -212,7 +212,8 @@ hosts_disable() {
 
 # hosts_list: list enabled or disabled hosts
 hosts_list() {
-  total=0
+  local total=0
+
   if [ -e $HOSTS ]; then
     if [ "$1" = "enabled" ]; then
       local match_string
@@ -233,22 +234,48 @@ hosts_list() {
   msg_check "${white}total: ${yellow}${total}${reset}"
 }
 
-# fetch_updates: update the remote hosts file
-fetch_updates() {
+# hosts_fetch_updates: update the remote hosts file
+hosts_fetch_updates() {
   root_check
   
-  local centries=0;
-  local nentries=0;
-
   if [ ! -z $remote_hosts ]; then
+      local tmpfile=$(mktemp)
+      local tmpfile0=$(mktemp)
+      local centries=0;
+      local nentries=0;
+      local n=0;
+
+      curl -o "${tmpfile}" -L "${remote_hosts}" -s
+
+      # Remove comments from the hosts file.
+      # See https://github.com/0xl3vi/hostsctl/issues/4 for details.
+      awk -v tmpfile="${tmpfile0}" '{ 
+	if ( substr($0, 1, 3) == "0.0" || substr($0, 1, 3) == "#0." ) {
+	  print $0 >> tmpfile
+	  close(tmpfile)
+	}
+      }' "${tmpfile}"
+
+      # TODO : We dont want to overwrite the previous 30-remote file
+      # every `fetch-updates` / `merge`, so bascally we want to update 30-remote,
+      # only with entries that not exists in 30-remote.
+
       if [ -f ${REMOTE_HOSTS} ];then
 	centries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
-      fi
-      curl -o "${REMOTE_HOSTS}" -L "${remote_hosts}" -s
-      # Diff against the current $REMOTE_HOSTS
-      nentries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
+	nentries=$(wc -l ${tmpfile} | cut -d' ' -f1)
 
-      msg_check "update: ${purple}$[nentries - centries]${reset} new entries"
+	if [ $centries -gt $nentries ];then
+	  n=$[ $centries - $nentries ]
+	else
+	  n=$[ $nentries - $centries ]
+	fi
+      else
+	n=$(wc -l ${tmpfile} | cut -d' ' -f1)
+      fi
+
+      mv ${tmpfile0} ${REMOTE_HOSTS}
+      msg_check "update: ${purple}$n${reset} new entries"	
+
   else
       msg_error "no remote hosts URL defined"
       exit 1
@@ -259,8 +286,8 @@ fetch_updates() {
 hosts_update() {
   root_check
 
-  init
-  fetch_updates
+  hosts_init
+  hosts_fetch_updates
   hosts_merge
 }
 
@@ -273,13 +300,18 @@ hosts_restore() {
   msg_info  "run ${yellow}\'hostsctl merge\'${reset} to undo."
 }
 
-# init: initialize required filed
-init() {
+# hosts_clean: remove temporary files created by hostsctl.
+hosts_clean() {
+  rm /tmp/hostsctl-* 2> /dev/null
+}
+
+# hosts_init: initialize required filed
+hosts_init() {
   if [ ! -d $HOSTSCTL_DIR ]; then
     mkdir $HOSTSCTL_DIR
   fi
   
-  if [ ! -e $USER_HOSTS ]; then
+  if [ ! -e ${USER_HOSTS} ]; then
     cp $HOSTS $USER_HOSTS
   fi
     
@@ -304,7 +336,7 @@ case $1 in
   update)
     hosts_update;;
   fetch-updates)
-    fetch_updates;;
+    hosts_fetch_updates;;
   list-enabled)
     hosts_list "enabled";;
   list-disabled)
@@ -316,3 +348,6 @@ case $1 in
   *)
     hosts_usage;;
 esac
+
+# Clean temporary files created by hostsctl.
+hosts_clean
