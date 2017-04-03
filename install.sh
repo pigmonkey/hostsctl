@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2017 Levi Sabah <0xl3vi@gmail.com>
+# Copyright (c) 2017 hostsctl.sh authors and contributors
 # (https://git.io/hostsctl)
 #
 # This program is free software: you can redistribute it and/or modify
@@ -33,7 +33,7 @@ msg_info() {
 hostsctl_install() {
   local prefix="$1"
 
-  printf "* Installaing hostsctl ...\n"
+  printf "* Installing hostsctl ...\n"
   # Install files
   #cp -av etc/* "/etc/"  # Do NOT ship to default hostsctl.conf file.
 
