@@ -18,6 +18,5 @@ Any questions should be directed to @0xl3vi
 * What is the current behavior?
 * Does this pull request introduce any breaking changes?
 
-
 [1]: https://github.com/0xl3vi/hostsctl/pulls
 [2]: https://github.com/0xl3vi/hostsctl/blob/master/.github/CONTRIBUTING.md#code-style

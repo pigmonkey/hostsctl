@@ -1,6 +1,6 @@
 # Hostctl: contributing
 
-Follow these guidelines if you'd like to contribute to the project!
+Follow these guidelines if you'd like to contribute to hostsctl.
 
 ---
 
@@ -16,13 +16,13 @@ Read through these guidelines before you get started:
 
 ### Questions & Concerns
 
-If you have any questions about using or developing for this project, reach out
+If you have any questions about using or developing hostsctl, reach out
 to @0xl3vi or send an [email][1].
 
 ### Issues & Bugs
 
 Submit an [issue][2] or [pull request][3] with a fix if you find any bugs in
-the project. See [below](#submitting-pull-requests) for instructions on sending
+hostsctl. See [below](#submitting-pull-requests) for instructions on sending
 in pull requests, and be sure to reference the [code style guide](#code-style)
 first!
 
@@ -73,13 +73,10 @@ set shiftwidth=2
 Good:
 
 ```bash
-#!/usr/bin/bash
-
 hosts_hello_world() {
   echo "Good!"
 }
 ```
-
 
 Bad: 
 
@@ -91,6 +88,24 @@ function hosts_hello_world() {
 hostsctl_hello_world()
 {
   echo "Bad"
+}
+```
+
+Please add a comment on top of the new function:
+
+```bash
+# hosts_hello_world: prints Hello, World to the screen.
+hosts_hello_world() {
+  echo "Hello, World!"
+}
+```
+
+If this is a "core" function,
+please add "hosts" before the new function name.
+
+```bash
+hosts_new_func_name() {
+  echo "new function!"
 }
 ```
 
@@ -109,6 +124,37 @@ Bad:
 x="Hello"
 echo $x
 ```
+
+### Execute commands
+
+Good
+
+```bash
+list_of_files=$(ls -a)
+
+for file in ${list_of_files};do
+  echo "FILE: $file"
+done
+```
+
+Bad
+
+```bash
+list_of_files=`ls -a`
+
+for file in $list_of_files:
+  echo "FILE: $file"
+done
+```
+
+# Text filtering
+
+1. Use only `awk(1P)` to manipulate text.
+2. do NOT use `sed(1)` (slow on large files!)
+3. use `grep(1)`/`awk(1P)` for searching string/substring in a file.
+
+
+that's it.
 
 [1]: mailto:0xl3vi@gmail.com
 [2]: https://github.com/0xl3vi/hostsctl/issues/new
