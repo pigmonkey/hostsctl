@@ -17,7 +17,7 @@
 #
 #
 
-PREFIX="/usr"
+PREFIX="/usr/local"
 
 root_check() {
   if [ $UID -ne 0 ];then
@@ -45,7 +45,7 @@ hostsctl_install() {
   # TODO: zsh-completions
   # ARCHLINUX
   if [ -f "/etc/arch-release" ];then
-    printf "* " && cp -v hostsctl.bash-completion "${prefix}/share/bash-completion/completions"
+    printf "* " && cp -v hostsctl.bash-completion "/usr/share/bash-completion/completions"
   fi
 
   # Copy your original /etc/hosts to /etc/hostsctl.d/10-hosts
@@ -68,7 +68,7 @@ hosts_uninstall() {
   rm -r /etc/hostsctl*
 
   if [ -f "/etc/arch-release" ];then
-    rm "${prefix}/share/bash-completion/completions/hostsctl.bash-completion"
+    rm "/usr/share/bash-completion/completions/hostsctl.bash-completion"
   fi
   printf "* hostsctl is no longer installed on your system.\n"
 }
