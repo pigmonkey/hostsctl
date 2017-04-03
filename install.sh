@@ -39,9 +39,7 @@ hostsctl_install() {
 
   printf "* " && cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
   chmod +x "${prefix}/bin/hostsctl"
-
-  # Here we are creating the hostsctl.d/ directory.
-  sudo hostsctl update
+  mkdir -p "/etc/hostsctl.d/"
 
   # Install bash-completions
   # TODO: zsh-completions
@@ -53,7 +51,7 @@ hostsctl_install() {
   # Copy your original /etc/hosts to /etc/hostsctl.d/10-hosts
   printf "* " && cp -v "/etc/hosts" "/etc/hostsctl.d/10-hosts"
   
-  sudo hostsctl merge # Merge hosts
+  sudo hostsctl update # Merge hosts
    
   printf "\n* congrats! hostsctl.sh installed on your system.\n\n"
   echo "1. cd /etc/hostsctl.d/ : to manage your hosts"
