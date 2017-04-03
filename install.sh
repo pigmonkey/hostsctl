@@ -45,7 +45,7 @@ hostsctl_install() {
   # TODO: zsh-completions
   # ARCHLINUX
   if [ -f "/etc/arch-release" ];then
-    printf "* " && cp -v hostsctl.bash-completion "/usr/share/bash-completion/completions"
+    printf "* " && cp -v hostsctl.bash-completion "/usr/share/bash-completion/completions/hostsctl"
   fi
 
   # Copy your original /etc/hosts to /etc/hostsctl.d/10-hosts
