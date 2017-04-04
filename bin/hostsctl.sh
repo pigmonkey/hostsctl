@@ -307,20 +307,20 @@ hosts_clean() {
 
 # hosts_init: initialize required filed
 hosts_init() {
-  if [ ! -d $HOSTSCTL_DIR ]; then
-    mkdir $HOSTSCTL_DIR
+  if [ ! -d ${HOSTSCTL_DIR} ]; then
+    mkdir ${HOSTSCTL_DIR}
   fi
   
   if [ ! -e ${USER_HOSTS} ]; then
-    cp $HOSTS $USER_HOSTS
+    cp ${HOSTS} ${USER_HOSTS}
   fi
     
-  if [ ! -e $REMOTE_HOSTS ]; then
-    touch $REMOTE_HOSTS
+  if [ ! -e ${REMOTE_HOSTS} ]; then
+    touch ${REMOTE_HOSTS}
   fi
     
-  if [ ! -e $ENABLED_DISABLED_HOSTS ]; then
-    touch $ENABLED_DISABLED_HOSTS
+  if [ ! -e ${ENABLED_DISABLED_HOSTS} ]; then
+    touch ${ENABLED_DISABLED_HOSTS}
   fi
 }
 
