@@ -2,8 +2,6 @@
 
 hostsctl allows you to block advertisements, trackers, and other malicious activity by manipulating `/etc/hosts`. By taking advantage of curated lists of known bad hosts and providing an interface to easily manipulate host definitions, you can save bandwidth and stay safer online.
 
-[![screenshot](https://raw.githubusercontent.com/wiki/0xl3vi/hostsctl/cast.gif)](cast)
-
 
 ## How it Works
 
