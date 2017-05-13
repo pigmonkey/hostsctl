@@ -1,5 +1,5 @@
 # hostsctl.sh: bash completions
-# (https://github.com/0xl3vi/hostsctl)
+# (https://github.com/pigmonkey/hostsctl)
 
 __hostsctl() {
   local cur prev opts

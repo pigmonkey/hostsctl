@@ -123,11 +123,11 @@ First try to `restore` the /etc/hosts file.
 $ sudo hostsctl restore
 ```
 
-If the problem persist please open new [issue](https://github.com/0xl3vi/hostsctl/issues) on Github.
+If the problem persist please open new [issue](https://github.com/pigmonkey/hostsctl/issues) on Github.
 
 ## Original
 
-The original version of this script is available in the [original branch](https://github.com/0xl3vi/hostsctl/tree/original).
+The original version of this script is available in the [original branch](https://github.com/pigmonkey/hostsctl/tree/original).
 
 
 ## Contributing
