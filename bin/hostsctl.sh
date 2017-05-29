@@ -148,13 +148,13 @@ hosts_export() {
 # hosts_merge: this will merge /etc/hostsctl.d/ to /etc/hosts
 hosts_merge() {
   root_check
-
+  hosts_init
   hosts_export > ${HOSTS}
 }
 
 _hosts_enable() {
   root_check
-
+  hosts_init
   local message="enabled"
   # Remove the host from the disabled hosts file.
   if grep -q "^$ip $1$" "${DISABLED_HOSTS}"; then
@@ -174,7 +174,7 @@ _hosts_enable() {
 
 _hosts_disable() {
   root_check
-
+  hosts_init
   local message="disabled"
   # Remove the host from the enabled hosts file.
   if grep -q "^$1$" "${ENABLED_HOSTS}"; then
@@ -233,7 +233,7 @@ hosts_list() {
 # hosts_fetch_updates: update the remote hosts file
 hosts_fetch_updates() {
   root_check
-  
+  hosts_init
   if [ ! -z $remote_hosts ]; then
       local tmpfile=$(mktemp)
       local tmpfile0=$(mktemp)
@@ -281,7 +281,6 @@ hosts_fetch_updates() {
 # hosts_update: update the remote hosts and export to $HOSTS
 hosts_update() {
   root_check
-
   hosts_init
   hosts_fetch_updates
   hosts_merge
@@ -301,7 +300,7 @@ hosts_clean() {
   rm /tmp/hostsctl-* 2> /dev/null
 }
 
-# hosts_init: initialize required filed
+# hosts_init: initialize required files.
 hosts_init() {
   if [ ! -d ${HOSTSCTL_DIR} ]; then
     mkdir ${HOSTSCTL_DIR}
