@@ -107,21 +107,19 @@ hosts_usage() {
 cat << END
 Usage $0 [option] [host] ...
  
-Hostsctl.sh allows you to block ads, social networks, porn, etc,
-by manipulating the /etc/hosts file.
+hostsctl allows you to block advertisements, trackers, and other malicious
+activity by manipulating /etc/hosts
 
 Arguments:
+  disable [host]   disable specified host
   enable [host]    enable specified host
-  disable [host]   disable specified host.
-  update           update remote hosts and apply to ${HOSTS}
   export           export hosts to stdout
-  merge            merge hosts to ${HOSTS}
-  list-enabled     list enabled hosts
-  list-disabled    list disabled hosts
   fetch-updates    update remote hosts without applying
-  restore	   restore ${HOSTS} from ${USER_HOSTS}.
-
-Full documentation at: <http://git.io/hostsctl>
+  list-disabled    list disabled hosts
+  list-enabled     list enabled hosts
+  merge            merge hosts to ${HOSTS}
+  restore          restore ${HOSTS} from ${USER_HOSTS}
+  update           update remote hosts and apply to ${HOSTS}
 END
 }
 
