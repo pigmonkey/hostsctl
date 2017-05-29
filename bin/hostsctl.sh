@@ -211,24 +211,22 @@ hosts_disable() {
 # hosts_list: list enabled or disabled hosts
 hosts_list() {
   local total=0
-
-  if [ -e $HOSTS ]; then
-    if [ "$1" = "enabled" ]; then
-      local match_string
-      match_string="#$(echo $ip | awk '{print substr($0,0,2)}')"
-      local match_color=$green
-    elif [ "$1" = "disabled" ]; then
-      local match_string
-      match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
-      local match_color=$red
-    fi
+  # Enabled hosts are defined only in the enabled file, so we can just list
+  # those entries.
+  if [ "$1" = "enabled" ]; then
+    local match_color=$green
+    hosts=$(grep -v '^#' "${ENABLED_HOSTS}")
+  # A complete list of disabled hosts should be built from the compiled hosts
+  # file.
+  elif [ "$1" = "disabled" ]; then
+    local match_color=$red
+    local match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
     hosts=$(awk -v match_string="$match_string" '{ if ( substr($0, 1, 3) == match_string ) printf("%s\n", $2) }' $HOSTS)
-
-    for host in $hosts;do
-      printf "$match_color\u25CF${reset} ${white}${host}${reset}\n"
-      total=$((total + 1))
-    done
   fi
+  for host in $hosts;do
+    printf "$match_color\u25CF${reset} ${white}${host}${reset}\n"
+    total=$((total + 1))
+  done
   msg_check "${white}total: ${yellow}${total}${reset}"
 }
 
