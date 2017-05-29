@@ -155,59 +155,41 @@ hosts_merge() {
 _hosts_enable() {
   root_check
 
-  local filename
-  local tmpfile=$(mktemp);
-
-  if grep -qw "$1" "${REMOTE_HOSTS}";then
-    filename="${REMOTE_HOSTS}"
-  elif grep -qw "$1" "${USER_HOSTS}";then
-    filename=${USER_HOSTS}
-  elif grep -qw "$1" "${ENABLED_DISABLED_HOSTS}";then
-    filename=${ENABLED_DISABLED_HOSTS}
+  local message="enabled"
+  # Remove the host from the disabled hosts file.
+  if grep -q "^$ip $1$" "${DISABLED_HOSTS}"; then
+      sed -i "/^$ip $1$/d" "${DISABLED_HOSTS}"
   fi
-
-  if [ -z ${filename} ];then
-    cp ${ENABLED_DISABLED_HOSTS} ${tmpfile} # Copy current version
-    echo "#${ip} $1" >> ${tmpfile} 
-    mv "${tmpfile}" "${ENABLED_DISABLED_HOSTS}" # Update
+  # If the host is already in the enabled hosts file, inform the user.
+  # Otherwise enable it.
+  if grep -q "$1" "${ENABLED_HOSTS}"; then
+      message="already $message"
   else
-    awk -vhost=$1 \
-    '{ if ( $0 ~ host && substr($0, 1, 1) != "#" ) printf("#%s\n", $0); else print $0 }' ${filename} \
-    > "${tmpfile}"
-    mv ${tmpfile} ${filename}
+      echo "$1" >> "${ENABLED_HOSTS}"
   fi
 
   hosts_merge
-  msg_check "$1: ${green}enabled${reset}"
+  msg_check "$1: ${green}${message}${reset}"
 }
 
 _hosts_disable() {
   root_check
 
-  local filename
-  local tmpfile=$(mktemp);
-
-  if grep -qw "$1" "${REMOTE_HOSTS}";then
-    filename="${REMOTE_HOSTS}"
-  elif grep -qw "$1" "${USER_HOSTS}";then
-    filename=${USER_HOSTS}
-  elif grep -qw "$1" "${ENABLED_DISABLED_HOSTS}";then
-    filename=${ENABLED_DISABLED_HOSTS}
+  local message="disabled"
+  # Remove the host from the enabled hosts file.
+  if grep -q "^$1$" "${ENABLED_HOSTS}"; then
+      sed -i "/^$1$/d" "${ENABLED_HOSTS}"
   fi
-
-  if [ -z ${filename} ];then
-    cp ${ENABLED_DISABLED_HOSTS} ${tmpfile} # Copy current version
-    echo "${ip} $1" >> ${tmpfile} 
-    mv "${tmpfile}" "${ENABLED_DISABLED_HOSTS}" # Update
+  # If the host is already in the disabled hosts file, inform the user.
+  # Otherwise disable it.
+  if grep -q "$ip $1" "${DISABLED_HOSTS}"; then
+      message="already $message"
   else
-    awk -vhost=$1 \
-    '{ if ( $0 ~ host && substr($0, 1, 1) == "#" ) print substr($0, 2); else print $0 }' ${filename} \
-    > "${tmpfile}"
-    mv ${tmpfile} ${filename}
+      echo "$ip $1" >> "${DISABLED_HOSTS}"
   fi
 
   hosts_merge
-  msg_check "$1: ${yellow}disabled${reset}"
+  msg_check "$1: ${yellow}${message}${reset}"
 }
 
 hosts_enable() {
