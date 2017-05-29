@@ -1,4 +1,4 @@
-# 
+#!/usr/bin/env bash
 # Copyright (c) 2017 hostsctl.sh authors and contributors
 # (https://git.io/hostsctl)
 #
