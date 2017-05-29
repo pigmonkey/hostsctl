@@ -57,10 +57,10 @@ hostsctl_install() {
 hosts_uninstall() {
   local prefix="$1"
 
+  printf "* Restoring old /etc/hosts file ...\n"
+  "${prefix}"/bin/hostsctl restore
   printf "* Uninstalling hostsctl ...\n"
   rm "${prefix}/bin/hostsctl"
-  printf "* Restoring old /etc/hosts file ...\n"
-  cp "/etc/hostsctl.d/10-hosts" "/etc/hosts"
   rm -r /etc/hostsctl*
 
   if [ -f "/etc/arch-release" ];then
@@ -78,8 +78,6 @@ Install.sh will install hostsctl on your system.
 Arguments:
   --prefix   set installation prefix (default: ${PREFIX})
   uninstall  uninstall hostsctl.
-
-Full documentation at: <http://git.io/hostsctl>
 EOF
 }
 
