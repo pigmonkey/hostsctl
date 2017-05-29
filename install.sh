@@ -34,8 +34,6 @@ hostsctl_install() {
   local prefix="$1"
 
   printf "* Installing hostsctl ...\n"
-  # Install files
-  #cp -av etc/* "/etc/"  # Do NOT ship to default hostsctl.conf file.
 
   printf "* " && cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
   chmod +x "${prefix}/bin/hostsctl"
@@ -47,11 +45,8 @@ hostsctl_install() {
     printf "* " && cp -v hostsctl.bash-completion "/usr/share/bash-completion/completions/hostsctl"
   fi
 
-  sudo hostsctl update # Merge hosts
-   
-  printf "\n* congrats! hostsctl.sh installed on your system.\n\n"
-  echo "1. cd /etc/hostsctl.d/ : to manage your hosts"
-  echo "2. Full documentation at: <http://git.io/hostsctl>"
+  printf "\n* congrats! hostsctl.sh installed on your system.\n"
+  echo "* to get started, run hostsctl update"
 }
 
 hosts_uninstall() {
