@@ -232,46 +232,45 @@ hosts_list() {
 
 # hosts_fetch_updates: update the remote hosts file
 hosts_fetch_updates() {
-  root_check
-  hosts_init
-  if [ ! -z $remote_hosts ]; then
-    local tmpfile=$(mktemp)
-    local tmpfile0=$(mktemp)
-    local centries=0;
-    local nentries=0;
-    local n=0;
-
-    curl -o "${tmpfile}" -L "${remote_hosts}" -s
-
-    # Remove comments from the hosts file.
-    # See https://github.com/0xl3vi/hostsctl/issues/4 for details.
-    awk -v tmpfile="${tmpfile0}" '{
-      if ( substr($0, 1, 3) == "0.0" || substr($0, 1, 3) == "#0." ) {
-        print $0 >> tmpfile
-        close(tmpfile)
-      }
-    }' "${tmpfile}"
-
-    if [ -f ${REMOTE_HOSTS} ]; then
-      centries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
-      nentries=$(wc -l ${tmpfile} | cut -d' ' -f1)
-
-      if [ $centries -gt $nentries ]; then
-        n=$[ $centries - $nentries ]
-      else
-        n=$[ $nentries - $centries ]
-      fi
-    else
-      n=$(wc -l ${tmpfile} | cut -d' ' -f1)
-    fi
-
-    mv ${tmpfile0} ${REMOTE_HOSTS}
-    msg_check "update: ${purple}$n${reset} new entries"
-
-  else
+  if [ -z $remote_hosts ]; then
     msg_error "no remote hosts URL defined"
     exit 1
   fi
+
+  root_check
+  hosts_init
+  local tmpfile=$(mktemp)
+  local tmpfile0=$(mktemp)
+  local centries=0;
+  local nentries=0;
+  local n=0;
+
+  curl -o "${tmpfile}" -L "${remote_hosts}" -s
+
+  # Remove comments from the hosts file.
+  # See https://github.com/0xl3vi/hostsctl/issues/4 for details.
+  awk -v tmpfile="${tmpfile0}" '{
+    if ( substr($0, 1, 3) == "0.0" || substr($0, 1, 3) == "#0." ) {
+      print $0 >> tmpfile
+      close(tmpfile)
+    }
+  }' "${tmpfile}"
+
+  if [ -f ${REMOTE_HOSTS} ]; then
+    centries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
+    nentries=$(wc -l ${tmpfile} | cut -d' ' -f1)
+
+    if [ $centries -gt $nentries ]; then
+      n=$[ $centries - $nentries ]
+    else
+      n=$[ $nentries - $centries ]
+    fi
+  else
+    n=$(wc -l ${tmpfile} | cut -d' ' -f1)
+  fi
+
+  mv ${tmpfile0} ${REMOTE_HOSTS}
+  msg_check "update: ${purple}$n${reset} new entries"
 }
 
 # hosts_update: update the remote hosts and export to $HOSTS
