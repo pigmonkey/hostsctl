@@ -22,7 +22,7 @@ $ sudo ./install.sh
 
 #### Packages
 
-* Archlinux [hostsctl-git](https://aur.archlinux.org/packages/hostsctl-git/) package.
+* Archlinux [hostsctl](https://aur.archlinux.org/packages/hostsctl/) package.
 
 ### Bash-completions
 
