@@ -261,9 +261,9 @@ hosts_fetch_updates() {
     nentries=$(wc -l "${tmpfile}" | cut -d' ' -f1)
 
     if [ "$centries" -gt "$nentries" ]; then
-      n=$("$centries" - "$nentries")
+      n=$(("$centries" - "$nentries"))
     else
-      n=$("$nentries" - "$centries")
+      n=$(("$nentries" - "$centries"))
     fi
   else
     n=$(wc -l "${tmpfile}" | cut -d' ' -f1)
