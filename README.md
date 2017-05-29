@@ -5,13 +5,11 @@ hostsctl allows you to block advertisements, trackers, and other malicious activ
 
 ## How it Works
 
-hostsctl gains flexibility by storing host definitions in different files in the `/etc/hostsctl.d` directory. When hostsctl is first run, it will create this directory and initiate the needed files. If `/etc/hosts` exists, it will be copied to `/etc/hostsctl.d/10-hosts`, ensuring that no existing definitions are lost.
+hostsctl gains flexibility by storing host definitions in different files in the `/etc/hostsctl` directory. When hostsctl is first run, it will create this directory and initiate the needed files. If `/etc/hosts` exists, it will be copied to `/etc/hostsctl/orig.hosts`, ensuring that no existing definitions are lost.
 
-A file containing the list of hosts to be blocked, defined in the configuration, is downloaded and stored at `/etc/hostsctl.d/30-remote`. Hosts that are explicitly blocked or unblocked via hostctl are stored at `/etc/hostsctl.d/20-enabled-disabled`.
+A file containing the list of hosts to be blocked, defined in the configuration, is downloaded and stored at `/etc/hostsctl/remote.hosts`. Hosts that are explicitly blocked or unblocked via hostctl are stored at `/etc/hostsctl/disabled.hosts` and `/etc/hostsctl/enabled.hosts`, respectively. hostsctl operates by merging these separate files together into `/etc/hosts`.
 
-The user is free to include other files in this directory as they see fit. hostsctl operates by merging these separate files together into `/etc/hosts`.
-
-*Note* that after using hostsctl, the `/etc/hosts` file should not be edited directly. Any manual changes will be lost on the next run. Instead, edit the appropriate file in the `/etc/hostsctl.d` directory.
+*Note* that after using hostsctl, the `/etc/hosts` file should not be edited directly. Any manual changes will be lost on the next run. Instead, edit the appropriate file in the `/etc/hostsctl` directory.
 
 
 ## Installation
@@ -33,7 +31,7 @@ Bash completions are automatically installed by the `install.sh` script on Arch 
 
 ## Configuration
 
-hostsctl is configured via `/etc/hostsctl.conf`. An example configuration is included, and automatically installed by the `install.sh` script.
+hostsctl is configured via `/etc/hostsctl/hostsctl.conf`. An example configuration is included, and automatically installed by the `install.sh` script.
 
 ### `remote_hosts`
 
@@ -56,7 +54,7 @@ ip='0.0.0.0'
 
 ## Usage
 
-The simplest usage is to run `hostsctl update`. This will download the latest version of the remote hosts file, merge it together with other entries in `/etc/hostsctl.d` and output the results to `/etc/hosts`.
+The simplest usage is to run `hostsctl update`. This will download the latest version of the remote hosts file, merge it together with other entries in `/etc/hostsctl` and output the results to `/etc/hosts`.
 
 ```bash
 $ sudo hostsctl update
@@ -85,7 +83,7 @@ $ hostsctl list-disabled
 
 ### Advanced Usage
 
-hostsctl is also able to update the remote hosts file and combine the various host definitions in `/etc/hostsctl.d` as separate steps. This may be useful if you wish to view what has changed in the latest version of your remote hosts file before applying those changes.
+hostsctl is also able to update the remote hosts file and combine the various host definitions in `/etc/hostsctl` as separate steps. This may be useful if you wish to view what has changed in the latest version of your remote hosts file before applying those changes.
 
 ```bash
 # Update the remote hosts file
