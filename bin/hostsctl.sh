@@ -49,11 +49,12 @@ fi;
 
 PREFIX="/etc"
 HOSTS="${PREFIX}/hosts"
-HOSTSCTL_DIR="${PREFIX}/hostsctl.d"
-REMOTE_HOSTS="${HOSTSCTL_DIR}/30-remote"
-ENABLED_DISABLED_HOSTS="${HOSTSCTL_DIR}/20-enabled-disabled"
-USER_HOSTS="${HOSTSCTL_DIR}/10-hosts"
-CONFIG_FILE="${PREFIX}/hostsctl.conf"
+HOSTSCTL_DIR="${PREFIX}/hostsctl"
+REMOTE_HOSTS="${HOSTSCTL_DIR}/remote.hosts"
+ENABLED_HOSTS="${HOSTSCTL_DIR}/enabled.hosts"
+DISABLED_HOSTS="${HOSTSCTL_DIR}/disabled.hosts"
+USER_HOSTS="${HOSTSCTL_DIR}/orig.hosts"
+CONFIG_FILE="${HOSTSCTL_DIR}/hostsctl.conf"
 
 # Define default configuration.
 remote_hosts='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts' 
