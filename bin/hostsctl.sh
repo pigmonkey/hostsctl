@@ -208,17 +208,19 @@ hosts_disable() {
 
 # hosts_list: list enabled or disabled hosts
 hosts_list() {
+  local match_color=""
+  local match_string=""
   local total=0
   # Enabled hosts are defined only in the enabled file, so we can just list
   # those entries.
   if [ "$1" = "enabled" ]; then
-    local match_color=$green
+    match_color=$green
     hosts=$(grep -v '^#' "${ENABLED_HOSTS}")
   # A complete list of disabled hosts should be built from the compiled hosts
   # file.
   elif [ "$1" = "disabled" ]; then
-    local match_color=$red
-    local match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
+    match_color=$red
+    match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
     hosts=$(awk -v match_string="$match_string" '{ if ( substr($0, 1, 3) == match_string ) printf("%s\n", $2) }' $HOSTS)
   fi
   for host in $hosts;do
@@ -255,19 +257,19 @@ hosts_fetch_updates() {
   }' "${tmpfile}"
 
   if [ -f ${REMOTE_HOSTS} ]; then
-    centries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
-    nentries=$(wc -l ${tmpfile} | cut -d' ' -f1)
+    centries=$(wc -l "${REMOTE_HOSTS}" | cut -d' ' -f1)
+    nentries=$(wc -l "${tmpfile}" | cut -d' ' -f1)
 
-    if [ $centries -gt $nentries ]; then
-      n=$[ $centries - $nentries ]
+    if [ "$centries" -gt "$nentries" ]; then
+      n=$("$centries" - "$nentries")
     else
-      n=$[ $nentries - $centries ]
+      n=$("$nentries" - "$centries")
     fi
   else
-    n=$(wc -l ${tmpfile} | cut -d' ' -f1)
+    n=$(wc -l "${tmpfile}" | cut -d' ' -f1)
   fi
 
-  mv ${tmpfile0} ${REMOTE_HOSTS}
+  mv "${tmpfile0}" "${REMOTE_HOSTS}"
   msg_check "update: ${purple}$n${reset} new entries"
 }
 
