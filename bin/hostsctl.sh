@@ -258,7 +258,7 @@ hosts_fetch_updates() {
 
   if [ -f ${REMOTE_HOSTS} ]; then
     centries=$(wc -l "${REMOTE_HOSTS}" | cut -d' ' -f1)
-    nentries=$(wc -l "${tmpfile}" | cut -d' ' -f1)
+    nentries=$(wc -l "${tmpfile0}" | cut -d' ' -f1)
 
     if [ "$centries" -gt "$nentries" ]; then
       n=$(("$centries" - "$nentries"))
@@ -266,7 +266,7 @@ hosts_fetch_updates() {
       n=$(("$nentries" - "$centries"))
     fi
   else
-    n=$(wc -l "${tmpfile}" | cut -d' ' -f1)
+    n=$(wc -l "${tmpfile0}" | cut -d' ' -f1)
   fi
 
   mv "${tmpfile0}" "${REMOTE_HOSTS}"
