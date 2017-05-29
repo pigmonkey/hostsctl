@@ -127,7 +127,22 @@ END
 
 # hosts_export: export /etc/hostsctl.d/ to stdout.
 hosts_export() {
-  cat /etc/hostsctl.d/*
+  local grep_args=(-v -e '^#' -e '^$')
+  # Exclude all enabled hosts from the output.
+  IFS=$'\n' read -d '' -r -a enabled < "${ENABLED_HOSTS}"
+  for i in "${enabled[@]}"; do
+      grep_args+=(-e " ${i}")
+  done;
+  # Exclude all disabled hosts from the output to prevent duplicates.
+  IFS=$'\n' read -d '' -r -a disabled < "${DISABLED_HOSTS}"
+  for i in "${disabled[@]}"; do
+      grep_args+=(-e "^${i}$")
+  done;
+  remote="$(grep "${grep_args[@]}" "${REMOTE_HOSTS}")"
+  # Concatenate the users hosts file, disabled hosts, and the remote hosts
+  # stripped of any enabled hosts.
+  hosts="$(cat "${USER_HOSTS}" "${DISABLED_HOSTS}")"
+  echo "${hosts}"$'\n'"${remote}"
 }
 
 # hosts_merge: this will merge /etc/hostsctl.d/ to /etc/hosts
