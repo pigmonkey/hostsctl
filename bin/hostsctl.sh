@@ -57,7 +57,7 @@ USER_HOSTS="${HOSTSCTL_DIR}/orig.hosts"
 CONFIG_FILE="${HOSTSCTL_DIR}/hostsctl.conf"
 
 # Define default configuration.
-remote_hosts='https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/fakenews-gambling-porn-social/hosts' 
+remote_hosts='https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
 ip='0.0.0.0'
 
 # Overwrite the defaults with a config file, if it exists.
