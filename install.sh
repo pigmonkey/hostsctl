@@ -39,7 +39,6 @@ hostsctl_install() {
 
   printf "* " && cp -v bin/hostsctl.sh "${prefix}/bin/hostsctl"
   chmod +x "${prefix}/bin/hostsctl"
-  mkdir -p "/etc/hostsctl.d/"
 
   # Install bash-completions
   # TODO: zsh-completions
@@ -48,9 +47,6 @@ hostsctl_install() {
     printf "* " && cp -v hostsctl.bash-completion "/usr/share/bash-completion/completions/hostsctl"
   fi
 
-  # Copy your original /etc/hosts to /etc/hostsctl.d/10-hosts
-  printf "* " && cp -v "/etc/hosts" "/etc/hostsctl.d/10-hosts"
-  
   sudo hostsctl update # Merge hosts
    
   printf "\n* congrats! hostsctl.sh installed on your system.\n\n"
