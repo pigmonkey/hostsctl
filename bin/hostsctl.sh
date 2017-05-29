@@ -317,8 +317,11 @@ hosts_init() {
     touch ${REMOTE_HOSTS}
   fi
     
-  if [ ! -e ${ENABLED_DISABLED_HOSTS} ]; then
-    touch ${ENABLED_DISABLED_HOSTS}
+  if [ ! -e ${ENABLED_HOSTS} ]; then
+    touch ${ENABLED_HOSTS}
+  fi
+  if [ ! -e ${DISABLED_HOSTS} ]; then
+    touch ${DISABLED_HOSTS}
   fi
 }
 
