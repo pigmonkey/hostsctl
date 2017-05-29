@@ -18,20 +18,20 @@
 
 # by https://github.com/mathiasbynens/dotfiles
 if tput setaf 1 &> /dev/null; then
-    tput sgr0; # reset colors
-    bold=$(tput bold);
-    reset=$(tput sgr0);
-    # Solarized colors, taken from http://git.io/solarized-colors.
-    black=$(tput setaf 0);
-    blue=$(tput setaf 33);
-    cyan=$(tput setaf 37);
-    green=$(tput setaf 64);
-    orange=$(tput setaf 166);
-    purple=$(tput setaf 125);
-    red=$(tput setaf 124);
-    violet=$(tput setaf 61);
-    white=$(tput setaf 15);
-    yellow=$(tput setaf 136);
+  tput sgr0; # reset colors
+  bold=$(tput bold);
+  reset=$(tput sgr0);
+  # Solarized colors, taken from http://git.io/solarized-colors.
+  black=$(tput setaf 0);
+  blue=$(tput setaf 33);
+  cyan=$(tput setaf 37);
+  green=$(tput setaf 64);
+  orange=$(tput setaf 166);
+  purple=$(tput setaf 125);
+  red=$(tput setaf 124);
+  violet=$(tput setaf 61);
+  white=$(tput setaf 15);
+  yellow=$(tput setaf 136);
 else
   bold='';
   reset="\e[0m";
@@ -62,7 +62,7 @@ ip='0.0.0.0'
 
 # Overwrite the defaults with a config file, if it exists.
 if [ -e $CONFIG_FILE ]; then
-    . $CONFIG_FILE
+  . $CONFIG_FILE
 fi
 
 # msg_check: show message when successfully done
