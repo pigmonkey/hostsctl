@@ -252,10 +252,6 @@ hosts_fetch_updates() {
       }
     }' "${tmpfile}"
 
-    # TODO : We dont want to overwrite the previous 30-remote file
-    # every `fetch-updates` / `merge`, so bascally we want to update 30-remote,
-    # only with entries that not exists in 30-remote.
-
     if [ -f ${REMOTE_HOSTS} ]; then
       centries=$(wc -l ${REMOTE_HOSTS} | cut -d' ' -f1)
       nentries=$(wc -l ${tmpfile} | cut -d' ' -f1)
