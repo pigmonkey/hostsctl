@@ -221,7 +221,7 @@ hosts_list() {
   elif [ "$1" = "disabled" ]; then
     match_color=$red
     match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
-    hosts=$(awk -v match_string="$match_string" '{ if ( substr($0, 1, 3) == match_string ) printf("%s\n", $2) }' $HOSTS)
+    hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) printf(\"%s\n\", \$2) }" $HOSTS)
   fi
   for host in $hosts;do
     printf "$match_color\u25CF${reset} ${white}${host}${reset}\n"
@@ -247,14 +247,10 @@ hosts_fetch_updates() {
 
   curl -o "${tmpfile}" -L "${remote_hosts}" -s
 
-  # Remove comments from the hosts file.
-  # See https://github.com/0xl3vi/hostsctl/issues/4 for details.
-  awk -v tmpfile="${tmpfile0}" '{
-    if ( substr($0, 1, 3) == "0.0" || substr($0, 1, 3) == "#0." ) {
-      print $0 >> tmpfile
-      close(tmpfile)
-    }
-  }' "${tmpfile}"
+  # Only allow entries in the new remote file which begin with the blocking IP
+  # address.
+  match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
+  hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) print \$0 >> \"${tmpfile0}\" }" "${tmpfile}")
 
   if [ -f ${REMOTE_HOSTS} ]; then
     centries=$(wc -l "${REMOTE_HOSTS}" | cut -d' ' -f1)
