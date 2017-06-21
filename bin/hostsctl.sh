@@ -252,21 +252,16 @@ hosts_fetch_updates() {
   match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
   hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) print \$0 >> \"${tmpfile0}\" }" "${tmpfile}")
 
+  # If a previous remote hosts files exists, count the number of different
+  # lines between the old and new files.
   if [ -f ${REMOTE_HOSTS} ]; then
-    centries=$(wc -l "${REMOTE_HOSTS}" | cut -d' ' -f1)
-    nentries=$(wc -l "${tmpfile0}" | cut -d' ' -f1)
-
-    if [ "$centries" -gt "$nentries" ]; then
-      n=$(("$centries" - "$nentries"))
-    else
-      n=$(("$nentries" - "$centries"))
-    fi
+    n=$(diff -U 0 "${REMOTE_HOSTS}" "${tmpfile0}" | grep -v ^@ | tail -n +3 | wc -l)
   else
     n=$(wc -l "${tmpfile0}" | cut -d' ' -f1)
   fi
 
   mv "${tmpfile0}" "${REMOTE_HOSTS}"
-  msg_check "update: ${purple}$n${reset} new entries"
+  msg_check "update: ${purple}$n${reset} modified entries"
 }
 
 # hosts_update: update the remote hosts and export to $HOSTS
