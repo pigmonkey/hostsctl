@@ -241,8 +241,6 @@ hosts_fetch_updates() {
   hosts_init
   local tmpfile=$(mktemp)
   local tmpfile0=$(mktemp)
-  local centries=0;
-  local nentries=0;
   local n=0;
 
   curl -o "${tmpfile}" -L "${remote_hosts}" -s
