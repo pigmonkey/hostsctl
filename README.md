@@ -89,7 +89,7 @@ hostsctl is also able to update the remote hosts file and combine the various ho
 # Update the remote hosts file
 $ sudo hostsctl fetch-updates
 # Export the all entries to stdout and compare them against the current /etc/hosts
-$ hostsctl export | diff /etc/hosts -
+$ hostsctl export | diff -y --suppress-common-lines /etc/hosts - | less
 # After confirming the changes, save them to /etc/hosts
 $ hostsctl merge
 ```
