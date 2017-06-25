@@ -91,7 +91,7 @@ $ sudo hostsctl fetch-updates
 # Export the all entries to stdout and compare them against the current /etc/hosts
 $ hostsctl export | diff -y --suppress-common-lines /etc/hosts - | less
 # After confirming the changes, save them to /etc/hosts
-$ hostsctl merge
+$ sudo hostsctl merge
 ```
 
 Similarly, this behaviour allows the host definitions to easily be stored elsewhere.
