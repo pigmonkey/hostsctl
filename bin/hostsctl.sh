@@ -281,7 +281,7 @@ hosts_restore() {
 
 # hosts_clean: remove temporary files created by hostsctl.
 hosts_clean() {
-  rm /tmp/hostsctl-* 2> /dev/null
+  trap 'rm /tmp/hostsctl-*'
 }
 
 # hosts_init: initialize required files.
