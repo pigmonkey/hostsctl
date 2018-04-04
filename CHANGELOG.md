@@ -1,6 +1,12 @@
 # Change Log
 
 
+## [ 0.1.2 ] - 2018-04-03
+
+### Fixed
+- Avoid returning non-zero exit code when cleaning temporary files.
+
+
 ## [ 0.1.1 ] - 2017-06-25
 
 ### Changed
