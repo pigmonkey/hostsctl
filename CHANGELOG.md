@@ -1,6 +1,13 @@
 # Change Log
 
 
+## Unreleased
+
+### Changed
+
+- Attempt to persist manual changes that are made to `/etc/hosts` when restoring.
+
+
 ## [ 0.1.2 ] - 2018-04-03
 
 ### Fixed
