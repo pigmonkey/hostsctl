@@ -270,11 +270,16 @@ hosts_update() {
   hosts_merge
 }
 
-# hosts_restore: restore original /etc/hosts temporary.
+# hosts_restore: remove remote and explicitly disabled hosts from /etc/hosts
 hosts_restore() {
   root_check
 
-  cp ${USER_HOSTS} /etc/hosts
+  grep --fixed-strings --line-regexp --invert-match \
+      -f ${REMOTE_HOSTS} \
+      -f ${DISABLED_HOSTS} \
+      ${HOSTS} > ${USER_HOSTS}
+
+  cp ${USER_HOSTS} ${HOSTS}
   msg_check "${HOSTS} has been restored."
   msg_info  "run ${yellow}\'hostsctl merge\'${reset} to undo."
 }
