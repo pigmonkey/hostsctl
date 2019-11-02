@@ -220,7 +220,7 @@ hosts_list() {
   # file.
   elif [ "$1" = "disabled" ]; then
     match_color=$red
-    match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
+    match_string="$(echo $ip | awk '{print substr($0,1,3)}')"
     hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) printf(\"%s\n\", \$2) }" $HOSTS)
   fi
   for host in $hosts;do
@@ -247,7 +247,7 @@ hosts_fetch_updates() {
 
   # Only allow entries in the new remote file which begin with the blocking IP
   # address.
-  match_string="$(echo $ip | awk '{print substr($0,0,3)}')"
+  match_string="$(echo $ip | awk '{print substr($0,1,3)}')"
   hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) print \$0 >> \"${tmpfile0}\" }" "${tmpfile}")
 
   # If a previous remote hosts files exists, count the number of different
