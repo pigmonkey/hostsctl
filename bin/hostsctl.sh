@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Copyright (c) 2017 hostsctl.sh authors and contributors
-# (https://git.io/hostsctl/)
+# (https://github.com/pigmonkey/hostsctl/)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
