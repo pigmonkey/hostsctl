@@ -14,7 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
+
+# See https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -o errexit -o errtrace -o nounset -o pipefail
 
 # Reset tty colors if running in a tty.
 maybe_reset_tty_colors() {
@@ -27,33 +29,38 @@ maybe_reset_tty_colors() {
 # by https://github.com/mathiasbynens/dotfiles
 if tput setaf 1 &> /dev/null; then
   maybe_reset_tty_colors
-  bold=$(tput bold);
-  reset=$(tput sgr0);
+  bold=$(tput bold)
+  reset=$(tput sgr0)
   # Solarized colors, taken from http://git.io/solarized-colors.
-  black=$(tput setaf 0);
-  blue=$(tput setaf 33);
-  cyan=$(tput setaf 37);
-  green=$(tput setaf 64);
-  orange=$(tput setaf 166);
-  purple=$(tput setaf 125);
-  red=$(tput setaf 124);
-  violet=$(tput setaf 61);
-  white=$(tput setaf 15);
-  yellow=$(tput setaf 136);
+  black=$(tput setaf 0)
+  blue=$(tput setaf 33)
+  cyan=$(tput setaf 37)
+  green=$(tput setaf 64)
+  orange=$(tput setaf 166)
+  purple=$(tput setaf 125)
+  red=$(tput setaf 124)
+  violet=$(tput setaf 61)
+  white=$(tput setaf 15)
+  yellow=$(tput setaf 136)
 else
-  bold='';
-  reset="\e[0m";
-  black="\e[1;30m";
-  blue="\e[1;34m";
-  cyan="\e[1;36m";
-  green="\e[1;32m";
-  orange="\e[1;33m";
-  purple="\e[1;35m";
-  red="\e[1;31m";
-  violet="\e[1;35m";
-  white="\e[1;37m";
-  yellow="\e[1;33m";
-fi;
+  # shellcheck disable=SC2034
+  bold=''
+  reset="\e[0m"
+  # shellcheck disable=SC2034
+  black="\e[1;30m"
+  blue="\e[1;34m"
+  # shellcheck disable=SC2034
+  cyan="\e[1;36m"
+  green="\e[1;32m"
+  # shellcheck disable=SC2034
+  orange="\e[1;33m"
+  purple="\e[1;35m"
+  red="\e[1;31m"
+  # shellcheck disable=SC2034
+  violet="\e[1;35m"
+  white="\e[1;37m"
+  yellow="\e[1;33m"
+fi
 
 PREFIX="/etc"
 HOSTS="${PREFIX}/hosts"
@@ -69,36 +76,37 @@ remote_hosts='https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts'
 ip='0.0.0.0'
 
 # Overwrite the defaults with a config file, if it exists.
-if [ -e $CONFIG_FILE ]; then
-  . $CONFIG_FILE
+if [ -e ${CONFIG_FILE} ]; then
+  # shellcheck disable=SC1090
+  . ${CONFIG_FILE}
 fi
 
 # msg_check: show message when successfully done
 # @param $@: text
 msg_check() {
-  printf "${green}\u2713${reset} $1\n"
+  printf "${green}\u2713${reset} %s\n" "$1"
 }
 
 # msg_error: show error message
 # @param $@: text
 msg_error() {
-  printf "${red}\u2744${reset} $@\n"
+  printf "${red}\u2744${reset} %s\n" "$*"
 }
 
 # msg_warning: show warning message.
 # @param $@: text
 msg_warning() {
-  printf "${yellow}\u2622${reset} $@\n"
+  printf "${yellow}\u2622${reset} %s\n" "$*"
 }
 
 # msg_info: show info message
 # @param $@: text
 msg_info() {
-  printf "${blue}\u221E${reset} $@\n"
+  printf "${blue}\u221E${reset} %s\n" "$*"
 }
 
 root_check() {
-  if [ $UID -ne 0 ];then
+  if [ ${UID} -ne 0 ]; then
     msg_error "please run as root."
     exit
   fi
@@ -107,14 +115,14 @@ root_check() {
 # mktemp: create a temporary file with random name
 mktemp() {
   local filename="/tmp/hostsctl-${RANDOM}"
-  touch "$filename"
+  touch "${filename}"
   echo "${filename}"
 }
 
 hosts_usage() {
-cat << END
+  cat << END
 Usage $0 [option] [host] ...
- 
+
 hostsctl allows you to block advertisements, trackers, and other malicious
 activity by manipulating /etc/hosts
 
@@ -135,15 +143,15 @@ END
 hosts_export() {
   local grep_args=(-v -e '^#' -e '^$')
   # Exclude all enabled hosts from the output.
-  IFS=$'\n' read -d '' -r -a enabled < "${ENABLED_HOSTS}"
+  IFS=$'\n' read -d '' -r -a enabled < "${ENABLED_HOSTS}" || true
   for i in "${enabled[@]}"; do
-      grep_args+=(-e " ${i}")
-  done;
+    grep_args+=(-e " ${i}")
+  done
   # Exclude all disabled hosts from the output to prevent duplicates.
-  IFS=$'\n' read -d '' -r -a disabled < "${DISABLED_HOSTS}"
+  IFS=$'\n' read -d '' -r -a disabled < "${DISABLED_HOSTS}" || true
   for i in "${disabled[@]}"; do
-      grep_args+=(-e "^${i}$")
-  done;
+    grep_args+=(-e "^${i}$")
+  done
   remote="$(grep "${grep_args[@]}" "${REMOTE_HOSTS}")"
   # Concatenate the users hosts file, disabled hosts, and the remote hosts
   # stripped of any enabled hosts.
@@ -163,15 +171,15 @@ _hosts_enable() {
   hosts_init
   local message="enabled"
   # Remove the host from the disabled hosts file.
-  if grep -q "^$ip $1$" "${DISABLED_HOSTS}"; then
-      sed -i "/^$ip $1$/d" "${DISABLED_HOSTS}"
+  if grep -q "^${ip} $1$" "${DISABLED_HOSTS}"; then
+    sed -i "/^${ip} $1$/d" "${DISABLED_HOSTS}"
   fi
   # If the host is already in the enabled hosts file, inform the user.
   # Otherwise enable it.
   if grep -q "$1" "${ENABLED_HOSTS}"; then
-      message="already $message"
+    message="already ${message}"
   else
-      echo "$1" >> "${ENABLED_HOSTS}"
+    echo "$1" >> "${ENABLED_HOSTS}"
   fi
 
   hosts_merge
@@ -184,14 +192,14 @@ _hosts_disable() {
   local message="disabled"
   # Remove the host from the enabled hosts file.
   if grep -q "^$1$" "${ENABLED_HOSTS}"; then
-      sed -i "/^$1$/d" "${ENABLED_HOSTS}"
+    sed -i "/^$1$/d" "${ENABLED_HOSTS}"
   fi
   # If the host is already in the disabled hosts file, inform the user.
   # Otherwise disable it.
-  if grep -q "$ip $1" "${DISABLED_HOSTS}"; then
-      message="already $message"
+  if grep -q "${ip} $1" "${DISABLED_HOSTS}"; then
+    message="already ${message}"
   else
-      echo "$ip $1" >> "${DISABLED_HOSTS}"
+    echo "${ip} $1" >> "${DISABLED_HOSTS}"
   fi
 
   hosts_merge
@@ -199,18 +207,14 @@ _hosts_disable() {
 }
 
 hosts_enable() {
-  local hosts="${@:2}"
-
-  for host in ${hosts};do
-    _hosts_enable "$host"
+  for host in "$@"; do
+    _hosts_enable "${host}"
   done
 }
 
 hosts_disable() {
-  local hosts="${@:2}"
-
-  for host in ${hosts};do
-    _hosts_disable "$host"
+  for host in "$@"; do
+    _hosts_disable "${host}"
   done
 }
 
@@ -222,17 +226,17 @@ hosts_list() {
   # Enabled hosts are defined only in the enabled file, so we can just list
   # those entries.
   if [ "$1" = "enabled" ]; then
-    match_color=$green
+    match_color=${green}
     hosts=$(grep -v '^#' "${ENABLED_HOSTS}")
   # A complete list of disabled hosts should be built from the compiled hosts
   # file.
   elif [ "$1" = "disabled" ]; then
-    match_color=$red
-    match_string="$(echo $ip | awk '{print substr($0,1,3)}')"
-    hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) printf(\"%s\n\", \$2) }" $HOSTS)
+    match_color=${red}
+    match_string="$(echo ${ip} | awk '{print substr($0,1,3)}')"
+    hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"${match_string}\" ) printf(\"%s\n\", \$2) }" ${HOSTS})
   fi
-  for host in $hosts;do
-    printf "$match_color\u25CF${reset} ${white}${host}${reset}\n"
+  for host in ${hosts}; do
+    printf "%s\u25CF${reset} ${white}${host}${reset}\n" "${match_color}"
     total=$((total + 1))
   done
   msg_check "${white}total: ${yellow}${total}${reset}"
@@ -240,37 +244,38 @@ hosts_list() {
 
 # hosts_fetch_updates: update the remote hosts file
 hosts_fetch_updates() {
-  if [ -z $remote_hosts ]; then
+  if [ -z ${remote_hosts} ]; then
     msg_error "no remote hosts URL defined"
     exit 1
   fi
 
   root_check
   hosts_init
-  local tmpfile=$(mktemp)
-  local tmpfile0=$(mktemp)
-  local n=0;
+  local tmpfile tmpfile0
+  tmpfile=$(mktemp) || return $?
+  tmpfile0=$(mktemp) || return $?
+  local n=0
 
   curl -o "${tmpfile}" -L "${remote_hosts}" -s
 
   # Only allow entries in the new remote file which begin with the blocking IP
   # address.
-  match_string="$(echo $ip | awk '{print substr($0,1,3)}')"
-  hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"$match_string\" ) print \$0 >> \"${tmpfile0}\" }" "${tmpfile}")
+  match_string="$(echo ${ip} | awk '{print substr($0,1,3)}')"
+  hosts=$(awk "{ if ( substr(\$0, 1, 3) == \"${match_string}\" ) print \$0 >> \"${tmpfile0}\" }" "${tmpfile}")
 
   # If a previous remote hosts files exists, count the number of different
   # lines between the old and new files.
   if [ -f ${REMOTE_HOSTS} ]; then
-    n=$(diff -U 0 "${REMOTE_HOSTS}" "${tmpfile0}" | grep -v ^@ | tail -n +3 | wc -l)
+    n=$(diff -U 0 "${REMOTE_HOSTS}" "${tmpfile0}" | grep -v ^@ | tail -n +3 | wc -l) || true
   else
-    n=$(wc -l "${tmpfile0}" | cut -d' ' -f1)
+    n=$(wc -l "${tmpfile0}" | cut -d' ' -f1) || true
   fi
 
   mv "${tmpfile0}" "${REMOTE_HOSTS}"
-  msg_check "update: ${purple}$n${reset} modified entries"
+  msg_check "update: ${purple}${n}${reset} modified entries"
 }
 
-# hosts_update: update the remote hosts and export to $HOSTS
+# hosts_update: update the remote hosts and export to ${HOSTS}
 hosts_update() {
   root_check
   hosts_init
@@ -283,13 +288,13 @@ hosts_restore() {
   root_check
 
   grep --fixed-strings --line-regexp --invert-match \
-      -f ${REMOTE_HOSTS} \
-      -f ${DISABLED_HOSTS} \
-      ${HOSTS} > ${USER_HOSTS}
+    -f ${REMOTE_HOSTS} \
+    -f ${DISABLED_HOSTS} \
+    ${HOSTS} > ${USER_HOSTS} || true
 
   cp ${USER_HOSTS} ${HOSTS}
   msg_check "${HOSTS} has been restored."
-  msg_info  "run ${yellow}\'hostsctl merge\'${reset} to undo."
+  msg_info "run ${yellow}\'hostsctl merge\'${reset} to undo."
 }
 
 # hosts_clean: remove temporary files created by hostsctl.
@@ -302,15 +307,15 @@ hosts_init() {
   if [ ! -d ${HOSTSCTL_DIR} ]; then
     mkdir ${HOSTSCTL_DIR}
   fi
-  
+
   if [ ! -e ${USER_HOSTS} ]; then
     cp ${HOSTS} ${USER_HOSTS}
   fi
-    
+
   if [ ! -e ${REMOTE_HOSTS} ]; then
     touch ${REMOTE_HOSTS}
   fi
-    
+
   if [ ! -e ${ENABLED_HOSTS} ]; then
     touch ${ENABLED_HOSTS}
   fi
@@ -321,27 +326,35 @@ hosts_init() {
 
 case $1 in
   disable)
-    hosts_disable "$@";;
+    hosts_disable "${@:2}"
+    ;;
   enable)
-    hosts_enable  "$@";;
+    hosts_enable "${@:2}"
+    ;;
   merge)
-    hosts_merge;;
+    hosts_merge
+    ;;
   export)
-    hosts_export;;
+    hosts_export
+    ;;
   update)
-    hosts_update;;
+    hosts_update
+    ;;
   fetch-updates)
-    hosts_fetch_updates;;
+    hosts_fetch_updates
+    ;;
   list-enabled)
-    hosts_list "enabled";;
+    hosts_list "enabled"
+    ;;
   list-disabled)
-    hosts_list "disabled";;
+    hosts_list "disabled"
+    ;;
   restore)
-    hosts_restore;;
-  --help)
-    hosts_usage;;
-  *)
-    hosts_usage;;
+    hosts_restore
+    ;;
+  --help | *)
+    hosts_usage
+    ;;
 esac
 
 # Clean temporary files created by hostsctl.
