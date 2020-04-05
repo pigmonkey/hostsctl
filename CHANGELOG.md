@@ -6,10 +6,12 @@
 ### Changed
 
 - Attempt to persist manual changes that are made to `/etc/hosts` when restoring.
+- Various bash improvements.
 
 ### Fixed
 
 - Use a 1-based `substr` index to support older versions of mawk.
+- Do not reset terminal colors when redirecting output.
 
 
 ## [ 0.1.2 ] - 2018-04-03
