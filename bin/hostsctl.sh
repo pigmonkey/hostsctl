@@ -324,7 +324,7 @@ hosts_init() {
   fi
 }
 
-case $1 in
+case ${1-help} in
   disable)
     hosts_disable "${@:2}"
     ;;
