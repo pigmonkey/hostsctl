@@ -3,7 +3,9 @@
 
 __hostsctl() {
   local cur prev opts
-  _init_completion || return
+  if [[ -n ${BASH_VERSION-} ]]; then
+    _init_completion || return
+  fi
 
   case $prev in
     enable|disable)
